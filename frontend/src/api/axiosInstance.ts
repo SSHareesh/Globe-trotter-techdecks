@@ -66,4 +66,27 @@ export const loginUser = (data: any) => api.post('auth/login/', data);
 export const registerUser = (data: any) => api.post('auth/register/', data);
 export const getProfile = () => api.get('auth/profile/');
 
+// Community API
+export const getCommunityPosts = (filter?: string) => {
+    const params = filter ? { filter } : {};
+    return api.get('community/posts/', { params });
+};
+
+export const createCommunityPost = (data: FormData) => {
+    // Don't set Content-Type header, let browser set it with boundary
+    return api.post('community/posts/', data);
+};
+
+export const likePost = (postId: number) => {
+    return api.post(`community/posts/${postId}/like/`);
+};
+
+export const commentOnPost = (postId: number, content: string) => {
+    return api.post(`community/posts/${postId}/comments/`, { content });
+};
+
+export const getPostComments = (postId: number) => {
+    return api.get(`community/posts/${postId}/comments/`);
+};
+
 export default api;
