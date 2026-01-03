@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TripCard from '../components/TripCard';
-import { trips } from '../data/dummyData';
 
 type TripStatus = 'all' | 'ongoing' | 'upcoming' | 'completed';
 
 export default function Trips() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TripStatus>('all');
+  const trips: any[] = [];
 
   const filteredTrips = activeTab === 'all'
     ? trips

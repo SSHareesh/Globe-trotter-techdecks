@@ -3,11 +3,11 @@ import { Calendar, DollarSign, Activity, ArrowLeft } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { itineraryData } from '../data/dummyData';
 
 export default function ItineraryView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const itineraryData = { destination: 'Sample Destination', days: [] };
 
   const totalExpense = itineraryData.days.reduce(
     (total, day) =>

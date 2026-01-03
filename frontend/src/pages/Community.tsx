@@ -3,10 +3,10 @@ import { Heart, MessageCircle, Share2, MapPin, Filter } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { communityPosts } from '../data/dummyData';
 
 export default function Community() {
   const [filter, setFilter] = useState('all');
+  const communityPosts: any[] = [];
 
   return (
     <div className="min-h-screen bg-gray-50">
