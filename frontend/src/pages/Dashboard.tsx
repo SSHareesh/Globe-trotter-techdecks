@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import TripCard from '../components/TripCard';
 import Card from '../components/Card';
 import { fetchTrendingDestinations, fetchDestinations } from '../api/landingApi';
-import { trips } from '../data/dummyData';
+import { trips } from '../data/yourtrips';
 
 export default function Dashboard() {
   const navigate = useNavigate();

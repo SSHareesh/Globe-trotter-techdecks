@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TripCard from '../components/TripCard';
-import { trips } from '../data/dummyData';
+import { trips } from '../data/yourtrips';
 
 type TripStatus = 'all' | 'ongoing' | 'upcoming' | 'completed';
 

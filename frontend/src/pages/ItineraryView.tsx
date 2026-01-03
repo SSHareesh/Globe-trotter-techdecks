@@ -3,7 +3,7 @@ import { Calendar, DollarSign, Activity, ArrowLeft } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { itineraryData } from '../data/dummyData';
+import { itineraryData } from '../data/yourtrips';
 
 export default function ItineraryView() {
   const { id } = useParams();
