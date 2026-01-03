@@ -1,33 +1,9 @@
-<<<<<<< Updated upstream
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  Plane,
-  Hotel,
-  MapPin,
-  Calendar,
-  ChevronRight,
-  Loader2,
-  CheckCircle2,
-  ArrowRight,
-  TrendingUp,
-  Star,
-  Globe
-} from 'lucide-react';
-=======
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Plus, Trash2 } from 'lucide-react';
->>>>>>> Stashed changes
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
-<<<<<<< Updated upstream
-import { fetchFlights, fetchHotels } from '../api/landingApi';
-import { createTrip } from '../api/tripApi';
-
-type Step = 'summary' | 'flights' | 'hotels' | 'complete';
-=======
 import { createTrip } from '../api/axiosInstance';
 
 interface ItinerarySection {
@@ -38,7 +14,6 @@ interface ItinerarySection {
   endDate: string;
   budget: string;
 }
->>>>>>> Stashed changes
 
 interface TripData {
   name: string;
@@ -50,41 +25,6 @@ interface TripData {
 export default function BuildItinerary() {
   const navigate = useNavigate();
   const location = useLocation();
-<<<<<<< Updated upstream
-  const { tripData, destination, attractions } = location.state || {};
-
-  const [currentStep, setCurrentStep] = useState<Step>('summary');
-  const [loading, setLoading] = useState(false);
-  const [flights, setFlights] = useState<any[]>([]);
-  const [hotels, setHotels] = useState<any[]>([]);
-  const [selectedFlight, setSelectedFlight] = useState<any>(null);
-  const [selectedHotel, setSelectedHotel] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!destination) {
-      navigate('/dashboard');
-    }
-  }, [destination, navigate]);
-
-  const loadFlights = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchFlights({
-        origin: 'MAA',
-        destination: destination?.iata_code || 'DEL',
-        departure_date: tripData?.startDate || '2026-06-01',
-        return_date: tripData?.endDate || '2026-06-10'
-      });
-      setFlights(data.results || []);
-      setCurrentStep('flights');
-    } catch (err: any) {
-      setError(err.message || 'Failed to load flights');
-    } finally {
-      setLoading(false);
-    }
-=======
   const { tripData, selectedDestination, selectedAttractions } = location.state as {
     tripData?: TripData;
     selectedDestination?: any;
@@ -116,7 +56,6 @@ export default function BuildItinerary() {
         budget: '' 
       }
     ]);
->>>>>>> Stashed changes
   };
 
   const loadHotels = async () => {
@@ -195,9 +134,6 @@ export default function BuildItinerary() {
     );
   };
 
-<<<<<<< Updated upstream
-  if (!destination) return null;
-=======
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -243,20 +179,11 @@ export default function BuildItinerary() {
       setSaving(false);
     }
   };
->>>>>>> Stashed changes
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
 
-<<<<<<< Updated upstream
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {renderStepProgressBar()}
-
-        {error && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-center">
-            {error}
-=======
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Build Your Itinerary</h1>
@@ -363,7 +290,6 @@ export default function BuildItinerary() {
             >
               Back
             </Button>
->>>>>>> Stashed changes
           </div>
         )}
 

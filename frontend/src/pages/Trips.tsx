@@ -1,16 +1,8 @@
 import { useState, useEffect } from 'react';
-<<<<<<< Updated upstream
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import TripCard from '../components/TripCard';
-import { getTrips } from '../api/tripApi';
-import { Loader2 } from 'lucide-react';
-=======
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TripCard from '../components/TripCard';
 import { getTrips } from '../api/axiosInstance';
->>>>>>> Stashed changes
 
 type TripStatus = 'all' | 'ongoing' | 'upcoming' | 'completed';
 
@@ -20,48 +12,6 @@ export default function Trips() {
   const [activeTab, setActiveTab] = useState<TripStatus>('all');
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-<<<<<<< Updated upstream
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadTrips();
-  }, []);
-
-  const loadTrips = async () => {
-    try {
-      setLoading(true);
-      const responseData = await getTrips();
-      const data = Array.isArray(responseData) ? responseData : (responseData.results || []);
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const tripsWithStatus = data.map((trip: any) => {
-        const start = new Date(trip.start_date);
-        const end = new Date(trip.end_date);
-        let status: TripStatus = 'upcoming';
-
-        if (today >= start && today <= end) {
-          status = 'ongoing';
-        } else if (today > end) {
-          status = 'completed';
-        }
-
-        return {
-          ...trip,
-          status,
-          image: trip.destination_data?.image || trip.destination_data?.image_url || 'https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg'
-        };
-      });
-
-      setTrips(tripsWithStatus);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load trips');
-    } finally {
-      setLoading(false);
-    }
-  };
-=======
   const successMessage = location.state?.message;
 
   useEffect(() => {
@@ -77,7 +27,6 @@ export default function Trips() {
     };
     fetchTrips();
   }, []);
->>>>>>> Stashed changes
 
   const filteredTrips = activeTab === 'all'
     ? trips
@@ -152,19 +101,11 @@ export default function Trips() {
               <TripCard
                 key={trip.id}
                 title={trip.name}
-<<<<<<< Updated upstream
-                destination={trip.destination_data?.city_name || 'Global'}
-                startDate={trip.start_date}
-                endDate={trip.end_date}
-                image={trip.image}
-                budget={trip.flight_data?.price?.total ? `₹${trip.flight_data.price.total}` : undefined}
-=======
                 destination={trip.description.match(/Destination:\s*([^|]+)/)?.[1] || trip.description}
                 startDate={trip.start_date}
                 endDate={trip.end_date}
                 image={trip.cover_image || 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg'}
                 budget={trip.description.match(/Budget:\s*([^|]+)/)?.[1] || 'N/A'}
->>>>>>> Stashed changes
                 status={trip.status}
                 onClick={() => navigate(`/itinerary/${trip.id}`)}
               />

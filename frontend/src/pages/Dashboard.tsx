@@ -6,11 +6,7 @@ import Button from '../components/Button';
 import TripCard from '../components/TripCard';
 import Card from '../components/Card';
 import { fetchTrendingDestinations, fetchDestinations } from '../api/landingApi';
-<<<<<<< Updated upstream
-import { getTrips } from '../api/tripApi';
-=======
 import { getTrips } from '../api/axiosInstance';
->>>>>>> Stashed changes
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,11 +21,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadTrendingDestinations();
-<<<<<<< Updated upstream
-    loadRealTrips();
-=======
     fetchUserTrips();
->>>>>>> Stashed changes
   }, []);
 
   const fetchUserTrips = async () => {
@@ -265,26 +257,6 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<<<<<<< Updated upstream
-          {trips.map((trip) => (
-            <TripCard
-              key={trip.id}
-              title={trip.name}
-              destination={trip.destination_data?.city_name || 'Global'}
-              startDate={trip.start_date}
-              endDate={trip.end_date}
-              image={trip.destination_data?.image || trip.destination_data?.image_url || 'https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg'}
-              budget={trip.flight_data?.price?.total ? `₹${trip.flight_data.price.total}` : undefined}
-              status={new Date() > new Date(trip.end_date) ? 'completed' : (new Date() >= new Date(trip.start_date) ? 'ongoing' : 'upcoming')}
-              onClick={() => navigate(`/itinerary/${trip.id}`)}
-            />
-          ))}
-          {!loading && trips.length === 0 && (
-            <div className="col-span-full text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-100">
-              <p className="text-gray-500 mb-4">You haven't planned any trips yet.</p>
-              <Button variant="outline" onClick={() => navigate('/create-trip')}>Plan your first trip →</Button>
-            </div>
-=======
           {tripsLoading ? (
             <p className="text-gray-600">Loading your trips...</p>
           ) : trips.length === 0 ? (
@@ -309,7 +281,6 @@ export default function Dashboard() {
                 onClick={() => navigate(`/itinerary/${trip.id}`)}
               />
             ))
->>>>>>> Stashed changes
           )}
         </div>
       </div>

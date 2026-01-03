@@ -6,7 +6,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-<<<<<<< HEAD
         const url = (config.url ?? '').toString();
         const isAuthEndpoint =
             url.includes('auth/login/') ||
@@ -19,10 +18,6 @@ api.interceptors.request.use(
         config.headers = config.headers || {};
 
         // Allow both JSON requests and multipart FormData (e.g. registration with profile_image).
-=======
-        config.headers = config.headers || {};
-
->>>>>>> 25499e3b98f6746f12c77719fc30ebf8b3e1617f
         const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
         if (!isFormData) {
             if (!config.headers['Content-Type'] && !config.headers['content-type']) {

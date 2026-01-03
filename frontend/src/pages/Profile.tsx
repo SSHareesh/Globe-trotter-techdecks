@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< Updated upstream
-import { Edit2, Globe, Calendar, User as UserIcon } from 'lucide-react';
-=======
 import { Edit2, MapPin, Globe, Calendar, User as UserIcon, X, Upload, Save } from 'lucide-react';
->>>>>>> Stashed changes
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -52,8 +48,6 @@ export default function Profile() {
   }, [user]);
 
   const upcomingTrips = trips.filter(t => t.status === 'upcoming');
-<<<<<<< Updated upstream
-=======
   const completedTrips = trips.filter(t => t.status === 'completed');
   const totalTrips = trips.length;
   const uniqueCountries = new Set(trips.map(t => {
@@ -61,7 +55,6 @@ export default function Profile() {
     const match = desc.match(/Destination:\s*([^|]+)/);
     return match ? match[1].trim().split(',')[1]?.trim() : '';
   }).filter(Boolean)).size;
->>>>>>> Stashed changes
 
   if (!user) {
     return (
@@ -226,8 +219,6 @@ export default function Profile() {
             )}
           </div>
         </div>
-<<<<<<< Updated upstream
-=======
 
         <div>
           <div className="flex justify-between items-center mb-6">
@@ -393,7 +384,6 @@ export default function Profile() {
             </Card>
           </div>
         )}
->>>>>>> Stashed changes
       </div>
     </div>
   );
