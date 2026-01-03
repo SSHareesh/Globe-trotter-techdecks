@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, User, Globe, MapPin, Users, Calendar, LogOut } from 'lucide-react';
+import { User, Globe, MapPin, Users, Calendar, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+// import logowithname from '../assets/images/logowithname.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -18,10 +19,14 @@ export default function Navbar() {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/dashboard" className="flex items-center space-x-2">
-            <Globe className="h-8 w-8 text-green-600" />
+          <Link to="/dashboard" className="flex items-center">
+            <img 
+              src="/images/logowithname.png" 
+              alt="GlobalTrotter Logo" 
+              className="h-20 w-auto object-contain" 
+            /> 
             <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-              GlobalTrotter
+              GlobeTrotter
             </span>
           </Link>
 
@@ -46,9 +51,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-              <Bell className="h-6 w-6" />
-            </button>
+        
 
             {user ? (
               <div className="flex items-center gap-2">
