@@ -28,23 +28,26 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
-    
+    name = models.CharField(max_length=255)
+    profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    language_preference = models.CharField(max_length=10, default='en')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Standard Django Auth fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     
-    date_joined = models.DateTimeField(default=timezone.now)
-    last_login = models.DateTimeField(null=True, blank=True)
-    
-    # Travel preferences
-    preferred_currency = models.CharField(max_length=3, default='USD')
-    travel_style = models.CharField(max_length=50, blank=True)  # adventure, luxury, budget, etc.
+    # Keeping these if they were useful, or removing if strictly following "just these fields"? 
+    # The user gave a list. I'll stick to the list + auth requirements.
+    # Travel style/currency were in the old file, I'll preserve them as they seem relevant to the app "Globe-trotter",
+    # unless strictly forbidden. "User - id, email ...". The user listed specific fields.
+    # I will strictly follow the list to avoid clutter, assuming the user wants a reset or specific schema.
+    # But I will keep `is_active` and `is_staff` for Django Admin to work nicely.
     
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+    REQUIRED_FIELDS = ['name']
 
     class Meta:
         db_table = 'users'
@@ -55,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name}".strip()
+        return self.name
 
     def get_short_name(self):
-        return self.first_name
+        return self.name.split()[0] if self.name else ''
