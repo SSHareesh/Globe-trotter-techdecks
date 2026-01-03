@@ -1,0 +1,162 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Action Controls -->
+<div class="action-controls">
+    <div class="action-buttons">
+        <a href="{% url 'admin_dashboard:manage_users' %}" class="btn btn-primary">
+            <i class="fas fa-users"></i> Manage Users
+        </a>
+        <a href="{% url 'admin_dashboard:manage_posts' %}" class="btn btn-outline">
+            <i class="fas fa-comments"></i> Community Posts
+        </a>
+        <a href="#popular-cities" class="btn btn-outline">
+            <i class="fas fa-city"></i> Popular Cities
+        </a>
+        <a href="#analytics" class="btn btn-outline">
+            <i class="fas fa-chart-line"></i> Analytics
+        </a>
+    </div>
+
+    <div class="filter-controls">
+        <select>
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+            <option>Last 90 Days</option>
+        </select>
+        <select>
+            <option>All Users</option>
+            <option>Active</option>
+            <option>Inactive</option>
+        </select>
+    </div>
+</div>
+
+<div class="main-content">
+    <!-- KPI Cards -->
+    <div class="dashboard-grid">
+        <div class="card kpi-card">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-value">{{ total_users }}</div>
+            <div class="kpi-label">Total Users</div>
+        </div>
+
+        <div class="card kpi-card">
+            <div class="kpi-icon"><i class="fas fa-user-check"></i></div>
+            <div class="kpi-value">{{ active_users }}</div>
+            <div class="kpi-label">Active Users (7d)</div>
+        </div>
+
+        <div class="card kpi-card">
+            <div class="kpi-icon"><i class="fas fa-map-marked-alt"></i></div>
+            <div class="kpi-value">{{ total_trips }}</div>
+            <div class="kpi-label">Total Trips</div>
+        </div>
+
+        <div class="card kpi-card">
+            <div class="kpi-icon"><i class="fas fa-comments"></i></div>
+            <div class="kpi-value">{{ total_posts }}</div>
+            <div class="kpi-label">Community Posts</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="dashboard-grid">
+        <!-- Pie Chart: Trip Categories -->
+        <div class="card">
+            <h3 class="card-title">Trip Distribution by Type</h3>
+            <div class="chart-container">
+                <canvas id="tripCategoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Line Chart: User Activity -->
+        <div class="card">
+            <h3 class="card-title">User Registrations (6 Months)</h3>
+            <div class="chart-container">
+                <canvas id="userActivityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Bar Chart: Popular Cities -->
+        <div class="card">
+            <h3 class="card-title" id="popular-cities">Top 10 Popular Cities</h3>
+            <div class="chart-container">
+                <canvas id="popularCitiesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users Table -->
+    <div class="card" style="margin-top: 2rem;">
+        <h3 class="card-title">Recent Users</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Trips</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in recent_users %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.trips.count }}</td>
+                        <td>{{ user.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge badge-success">Active</span>
+                            {% else %}
+                            <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin_dashboard:manage_users' %}" class="btn btn-sm btn-outline">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Posts -->
+    <div class="card" style="margin-top: 2rem;">
+        <h3 class="card-title">Recent Community Posts</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Content</th>
+                        <th>Destination</th>
+                        <th>Likes</th>
+                        <th>Comments</th>
+                        <th>Posted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in recent_posts %}
+                    <tr>
+                        <td>{{ post.user.name }}</td>
+                        <td>{{ post.content|truncatewords:10 }}</td>
+                        <td>{{ post.destination|default:"—" }}</td>
+                        <td>{{ post.likes.count }}</td>
+                        <td>{{ post.comments.count }}</td>
+                        <td>{{ post.created_at|timesince }} ago</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} - GlobeTrotter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2E7D32;
+            --secondary-green: #A5D6A7;
+            --light-green: #E8F5E9;
+            --dark-gray: #212121;
+            --text-gray: #616161;
+            --border-gray: #E0E0E0;
+            --white: #FFFFFF;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #F5F5F5;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            text-decoration: none;
+        }
+
+        .navbar-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+        }
+
+        .navbar-search input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .navbar-search input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px var(--light-green);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .btn-icon:hover {
+            color: var(--primary-green);
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        /* Action Controls */
+        .action-controls {
+            background: var(--white);
+            padding: 1.5rem 2rem;
+            margin: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #1B5E20;
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+
+        .btn-outline:hover {
+            background: var(--light-green);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .filter-controls select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            background: var(--white);
+            transition: all 0.3s;
+        }
+
+        .filter-controls select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 0 2rem 2rem 2rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            text-align: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+        }
+
+        .kpi-icon {
+            font-size: 2rem;
+            color: var(--secondary-green);
+            margin-bottom: 1rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            background: var(--light-green);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #FAFAFA;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #C8E6C9;
+            color: var(--primary-green);
+        }
+
+        .badge-danger {
+            background: #FFCDD2;
+            color: #C62828;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background: #D32F2F;
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #B71C1C;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Messages */
+        .messages {
+            margin: 1.5rem 2rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: var(--light-green);
+            color: var(--primary-green);
+            border-left: 4px solid var(--primary-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-search {
+                display: none;
+            }
+
+            .action-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'admin_dashboard:dashboard' %}" class="navbar-brand">
+            <i class="fas fa-globe"></i>
+            GlobeTrotter Admin
+        </a>
+
+        <div class="navbar-search">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search users, trips, cities...">
+            </div>
+        </div>
+
+        <div class="navbar-actions">
+            <button class="btn-icon" title="Notifications">
+                <i class="fas fa-bell"></i>
+            </button>
+            <div class="user-dropdown">
+                <div class="user-avatar" title="{{ request.user.name }}">
+                    {{ request.user.name|slice:":1"|upper }}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

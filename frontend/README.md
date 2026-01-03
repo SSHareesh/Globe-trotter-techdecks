@@ -1,4 +1,4 @@
-# GlobalTrotter - Travel Planner App
+# GlobeTrotter - Travel Planner App
 
 A modern, feature-rich travel planning application built with React, TypeScript, and Tailwind CSS.
 

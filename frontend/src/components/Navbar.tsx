@@ -39,8 +39,8 @@ export default function Navbar() {
                   key={link.path}
                   to={link.path}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isActive
-                      ? 'text-green-600 bg-green-50'
-                      : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
                     }`}
                 >
                   <Icon className="h-5 w-5" />
