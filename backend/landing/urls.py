@@ -11,6 +11,7 @@ from landing.views import (
     TripSearchFlightsView,
     TripSearchHotelsView,
     TripAIEnhanceView,
+    ChatBotView,
 )
 
 app_name = 'landing'
@@ -26,4 +27,5 @@ urlpatterns = [
     path('trip/enhance/', TripAIEnhanceView.as_view(), name='trip_enhance'),
     path('trip/flights/', TripSearchFlightsView.as_view(), name='trip_flights'),
     path('trip/hotels/', TripSearchHotelsView.as_view(), name='trip_hotels'),
+    path('chat/', ChatBotView.as_view(), name='chat'),
 ]
