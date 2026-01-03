@@ -1,1 +1,1 @@
-# Admin package
+from .user_admin import UserAdmin

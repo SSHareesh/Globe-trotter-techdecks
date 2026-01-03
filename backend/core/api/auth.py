@@ -8,9 +8,6 @@ from core.serializers.auth import (
     RegisterSerializer,
     LoginSerializer,
     UserSerializer,
-    ChangePasswordSerializer,
-    PasswordResetRequestSerializer,
-    PasswordResetConfirmSerializer,
 )
 from core.models import User
 

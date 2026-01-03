@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -28,25 +27,13 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
-    profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
-    bio = models.TextField(max_length=500, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    country = models.CharField(max_length=100, null=True, blank=True)
-    phone = models.CharField(max_length=20, null=True, blank=True)
-    language_preference = models.CharField(max_length=10, default='en')
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    name = models.CharField(max_length=255)
+    profile_image = models.TextField(null=True, blank=True)  # Using TextField to match user's SQL "TEXT"
+    language_preference = models.TextField(null=True, blank=True, default='en')  # Using TEXT
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    # Standard Django Auth fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    
-    # Keeping these if they were useful, or removing if strictly following "just these fields"? 
-    # The user gave a list. I'll stick to the list + auth requirements.
-    # Travel style/currency were in the old file, I'll preserve them as they seem relevant to the app "Globe-trotter",
-    # unless strictly forbidden. "User - id, email ...". The user listed specific fields.
-    # I will strictly follow the list to avoid clutter, assuming the user wants a reset or specific schema.
-    # But I will keep `is_active` and `is_staff` for Django Admin to work nicely.
     
     objects = UserManager()
 
