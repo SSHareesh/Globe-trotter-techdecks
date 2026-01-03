@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Globe, Upload, Loader2, User } from 'lucide-react';
-import { Globe, User } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
@@ -125,14 +124,6 @@ export default function Register() {
                   <Upload className="h-4 w-4" />
                 </button>
               </div>
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="bg-gray-100 w-32 h-32 rounded-full flex items-center justify-center">
-                <User className="h-12 w-12 text-gray-400" />
-              </div>
-              {/* <button className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition-colors">
-                <Upload className="h-4 w-4" />
-              </button> */}
             </div>
 
             {error && (
