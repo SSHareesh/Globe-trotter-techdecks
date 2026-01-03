@@ -21,7 +21,7 @@ export default function Navbar() {
           <Link to="/dashboard" className="flex items-center space-x-2">
             <Globe className="h-8 w-8 text-green-600" />
             <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-              GlobalTrotter
+              GlobeTrotter
             </span>
           </Link>
 
@@ -34,8 +34,8 @@ export default function Navbar() {
                   key={link.path}
                   to={link.path}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isActive
-                      ? 'text-green-600 bg-green-50'
-                      : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                    ? 'text-green-600 bg-green-50'
+                    : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
                     }`}
                 >
                   <Icon className="h-5 w-5" />

@@ -43,16 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Third party
+    # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
-    'django_filters',
     
-    # Local
-    'core.apps.CoreConfig',
-    'landing.apps.LandingConfig',
+    # Project apps
+    'core',
+    'landing',
+    'admin_dashboard',  # Add this
 ]
 
 MIDDLEWARE = [
