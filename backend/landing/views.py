@@ -11,7 +11,7 @@ from landing.api.errors import error_response
 from landing.providers.amadeus import search_cities
 from landing.providers.pexels import search_image
 from landing.services.cache import cache_get_or_set
-from landing.services.http import UpstreamError
+from landing.services.http import UpstreamError, get_json
 
 
 # Default popular destinations for Screen 3 initial load  
@@ -262,6 +262,94 @@ class LandingDestinationsView(LandingAPIView):
         return Response({
             'cached': cached,
             'query': q,
+            'results': results,
+        })
+
+
+class LandingAttractionsView(LandingAPIView):
+    """Tourist attractions for a selected destination.
+
+    Uses Wikipedia search + page thumbnails so it works worldwide without API keys.
+    """
+
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+
+    def get(self, request):
+        city = (request.query_params.get('city') or request.query_params.get('q') or '').strip()
+        if not city:
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_city',
+                message='City is required. Provide ?city=...'
+            )
+
+        timeout = getattr(settings, 'OUTBOUND_HTTP_TIMEOUT_SECONDS', 6.0)
+        ttl = int(getattr(settings, 'CACHES', {}).get('default', {}).get('TIMEOUT', 3600) or 3600)
+        limit = int(request.query_params.get('limit') or 18)
+        limit = max(6, min(limit, 40))
+
+        def compute():
+            search = f"tourist attractions in {city}"
+            url = (
+                "https://en.wikipedia.org/w/api.php"
+                "?action=query"
+                "&format=json"
+                "&origin=*"
+                "&generator=search"
+                f"&gsrsearch={search.replace(' ', '%20')}"
+                f"&gsrlimit={limit}"
+                "&gsrnamespace=0"
+                "&prop=pageimages%7Cextracts%7Cdescription"
+                "&piprop=thumbnail"
+                "&pithumbsize=400"
+                "&exintro=1"
+                "&explaintext=1"
+                "&exsentences=2"
+                "&redirects=1"
+            )
+
+            resp = get_json(url, timeout_seconds=timeout)
+            data = resp.data or {}
+            pages = (data.get('query') or {}).get('pages') or {}
+
+            out = []
+            city_lower = city.lower()
+            for page in pages.values():
+                title = (page.get('title') or '').strip()
+                if not title:
+                    continue
+                if title.lower() == city_lower:
+                    continue
+
+                title_lower = title.lower()
+                if title_lower.startswith('lists of tourist attractions'):
+                    continue
+
+                thumb = (page.get('thumbnail') or {}).get('source')
+                extract = (page.get('extract') or '').strip()
+                desc = (page.get('description') or '').strip()
+                pageid = page.get('pageid')
+
+                # Keep results relevant to the selected destination.
+                extract_lower = extract.lower() if extract else ''
+                if city_lower not in title_lower and city_lower not in extract_lower:
+                    continue
+
+                out.append({
+                    'name': title,
+                    'description': extract or desc or '',
+                    'image_url': thumb,
+                    'source': 'wikipedia',
+                    'source_url': f"https://en.wikipedia.org/?curid={pageid}" if pageid else None,
+                })
+
+            return out[:limit]
+
+        results, cached = cache_get_or_set('attractions', {'city': city, 'limit': limit, 'v': 2}, ttl, compute)
+        return Response({
+            'cached': cached,
+            'city': city,
             'results': results,
         })
 

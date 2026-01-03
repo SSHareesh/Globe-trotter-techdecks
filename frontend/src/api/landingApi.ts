@@ -1,6 +1,10 @@
 const BACKEND_ORIGIN = import.meta.env.VITE_BACKEND_ORIGIN || 'http://127.0.0.1:8000';
 
-function buildUrl(path, params) {
+interface Params {
+  [key: string]: string | number | undefined;
+}
+
+function buildUrl(path: string, params?: Params): string {
   const url = new URL(path, BACKEND_ORIGIN);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -10,7 +14,7 @@ function buildUrl(path, params) {
   return url.toString();
 }
 
-async function handleResponse(res) {
+async function handleResponse(res: Response) {
   if (!res.ok) {
     let errorMessage = `Request failed with status ${res.status}`;
     try {
@@ -23,19 +27,19 @@ async function handleResponse(res) {
     } catch {
       // If JSON parsing fails, use generic message
     }
-    const error = new Error(errorMessage);
+    const error: any = new Error(errorMessage);
     error.status = res.status;
     throw error;
   }
   return res.json();
 }
 
-export async function fetchLandingBanner(q) {
+export async function fetchLandingBanner(q?: string) {
   const res = await fetch(buildUrl('/api/v1/landing/banner/', { q }));
   return handleResponse(res);
 }
 
-export async function fetchDestinations(q, limit = 6) {
+export async function fetchDestinations(q: string, limit: number = 6) {
   if (!q || !q.trim()) {
     throw new Error('Please enter a search term');
   }
@@ -44,7 +48,7 @@ export async function fetchDestinations(q, limit = 6) {
   // Map backend response to frontend format
   return {
     ...data,
-    destinations: (data.results || []).map(dest => ({
+    destinations: (data.results || []).map((dest: any) => ({
       ...dest,
       city_name: dest.name,
       country_name: dest.country,
@@ -53,17 +57,35 @@ export async function fetchDestinations(q, limit = 6) {
   };
 }
 
-export async function fetchTrendingDestinations(limit = 8) {
+export async function fetchTrendingDestinations(limit: number = 8) {
   const res = await fetch(buildUrl('/api/v1/landing/trending/', { limit }));
   const data = await handleResponse(res);
   // Map backend response to frontend format
   return {
     ...data,
-    destinations: (data.results || []).map(dest => ({
+    destinations: (data.results || []).map((dest: any) => ({
       ...dest,
       city_name: dest.name,
       country_name: dest.country,
       iata_code: dest.provider_place_id,
+    })),
+  };
+}
+
+export async function fetchAttractions(city: string, limit: number = 18) {
+  if (!city || !city.trim()) {
+    throw new Error('City is required');
+  }
+  const res = await fetch(buildUrl('/api/v1/landing/attractions/', { city, limit }));
+  const data = await handleResponse(res);
+  return {
+    ...data,
+    attractions: (data.results || []).map((p: any) => ({
+      name: p.name,
+      description: p.description,
+      image_url: p.image_url,
+      source_url: p.source_url,
+      source: p.source,
     })),
   };
 }
