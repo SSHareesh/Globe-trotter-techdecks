@@ -30,6 +30,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
     language_preference = models.CharField(max_length=10, default='en')
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 

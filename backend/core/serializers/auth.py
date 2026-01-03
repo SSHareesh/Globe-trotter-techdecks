@@ -7,8 +7,8 @@ from core.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'name', 'profile_image', 
-                  'language_preference', 'created_at')
+        fields = ('id', 'email', 'name', 'profile_image', 'bio',
+                  'city', 'country', 'phone', 'language_preference', 'created_at')
         read_only_fields = ('id', 'created_at')
 
 
@@ -18,9 +18,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'password2', 'name', 'language_preference')
+        fields = ('email', 'password', 'password2', 'name', 'bio', 'city', 'country', 'phone', 'language_preference')
         extra_kwargs = {
-            'language_preference': {'required': False}
+            'language_preference': {'required': False},
+            'bio': {'required': False},
+            'city': {'required': False},
+            'country': {'required': False},
+            'phone': {'required': False},
         }
 
     def validate(self, attrs):
