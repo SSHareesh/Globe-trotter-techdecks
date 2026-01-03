@@ -2,7 +2,6 @@
 
 Django REST Framework backend for the Globe Trotter travel planning application with JWT authentication.
 
-
 # Create your views here.
 # Create virtual environment
 python -m venv venv
