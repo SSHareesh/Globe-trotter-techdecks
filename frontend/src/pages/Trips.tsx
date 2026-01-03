@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
+<<<<<<< Updated upstream
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TripCard from '../components/TripCard';
 import { getTrips } from '../api/tripApi';
 import { Loader2 } from 'lucide-react';
+=======
+import { useNavigate, useLocation } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import TripCard from '../components/TripCard';
+import { getTrips } from '../api/axiosInstance';
+>>>>>>> Stashed changes
 
 type TripStatus = 'all' | 'ongoing' | 'upcoming' | 'completed';
 
 export default function Trips() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<TripStatus>('all');
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+<<<<<<< Updated upstream
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,6 +63,23 @@ export default function Trips() {
       setLoading(false);
     }
   };
+=======
+  const successMessage = location.state?.message;
+
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        const response = await getTrips();
+        setTrips(response.data || []);
+      } catch (error) {
+        console.error('Failed to fetch trips:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrips();
+  }, []);
+>>>>>>> Stashed changes
 
   const filteredTrips = activeTab === 'all'
     ? trips
@@ -85,6 +111,11 @@ export default function Trips() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">My Trips</h1>
           <p className="text-gray-600">Manage and view all your travel plans</p>
+          {successMessage && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800\">
+              {successMessage}
+            </div>
+          )}
         </div>
 
         {error && (
@@ -113,25 +144,43 @@ export default function Trips() {
           </div>
         </div>
 
-        {filteredTrips.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Loading your trips...</p>
+          </div>
+        ) : filteredTrips.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTrips.map((trip) => (
               <TripCard
                 key={trip.id}
                 title={trip.name}
+<<<<<<< Updated upstream
                 destination={trip.destination_data?.city_name || 'Global'}
                 startDate={trip.start_date}
                 endDate={trip.end_date}
                 image={trip.image}
                 budget={trip.flight_data?.price?.total ? `₹${trip.flight_data.price.total}` : undefined}
+=======
+                destination={trip.description.match(/Destination:\s*([^|]+)/)?.[1] || trip.description}
+                startDate={trip.start_date}
+                endDate={trip.end_date}
+                image={trip.cover_image || 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg'}
+                budget={trip.description.match(/Budget:\s*([^|]+)/)?.[1] || 'N/A'}
+>>>>>>> Stashed changes
                 status={trip.status}
                 onClick={() => navigate(`/itinerary/${trip.id}`)}
               />
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">No trips found in this category</p>
+          <div className="text-center py-12 bg-white rounded-xl shadow-sm">
+            <p className="text-gray-600 mb-4">No {activeTab !== 'all' ? activeTab : ''} trips found.</p>
+            <button
+              onClick={() => navigate('/create-trip')}
+              className="text-green-600 hover:text-green-700 font-medium"
+            >
+              Create a new trip →
+            </button>
           </div>
         )}
       </div>

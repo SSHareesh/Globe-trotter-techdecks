@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { User, Globe, MapPin, Users, Calendar, LogOut } from 'lucide-react';
+import { User, Globe, MapPin, Users, Calendar, LogOut, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 // import logowithname from '../assets/images/logowithname.png';
 
@@ -11,6 +11,7 @@ export default function Navbar() {
   const navLinks = [
     { path: '/dashboard', label: 'Home', icon: Globe },
     { path: '/trips', label: 'My Trips', icon: MapPin },
+    { path: '/activity-search', label: 'Search', icon: Search },
     { path: '/community', label: 'Community', icon: Users },
     { path: '/calendar', label: 'Calendar', icon: Calendar }
   ];

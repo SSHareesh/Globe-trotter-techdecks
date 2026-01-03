@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { loginUser, registerUser, getProfile } from '../api/axiosInstance';
+import { loginUser, registerUser, getProfile, updateProfile } from '../api/axiosInstance';
 
 interface User {
     id: number;
@@ -19,6 +19,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<User>;
     register: (userData: any) => Promise<User>;
     logout: () => void;
+    updateUserProfile: (userData: FormData) => Promise<User>;
     loading: boolean;
 }
 
@@ -67,8 +68,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     };
 
+    const updateUserProfile = async (userData: FormData) => {
+        const res = await updateProfile(userData);
+        setUser(res.data);
+        return res.data;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, updateUserProfile, loading }}>
             {children}
         </AuthContext.Provider>
     );

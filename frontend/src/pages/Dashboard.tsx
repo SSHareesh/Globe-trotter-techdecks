@@ -6,11 +6,17 @@ import Button from '../components/Button';
 import TripCard from '../components/TripCard';
 import Card from '../components/Card';
 import { fetchTrendingDestinations, fetchDestinations } from '../api/landingApi';
+<<<<<<< Updated upstream
 import { getTrips } from '../api/tripApi';
+=======
+import { getTrips } from '../api/axiosInstance';
+>>>>>>> Stashed changes
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [destinations, setDestinations] = useState<any[]>([]);
+  const [trips, setTrips] = useState<any[]>([]);
+  const [tripsLoading, setTripsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -19,8 +25,23 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadTrendingDestinations();
+<<<<<<< Updated upstream
     loadRealTrips();
+=======
+    fetchUserTrips();
+>>>>>>> Stashed changes
   }, []);
+
+  const fetchUserTrips = async () => {
+    try {
+      const response = await getTrips();
+      setTrips(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch trips:', error);
+    } finally {
+      setTripsLoading(false);
+    }
+  };
 
   const loadTrendingDestinations = async () => {
     try {
@@ -245,6 +266,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<<<<<<< Updated upstream
           {trips.map((trip) => (
             <TripCard
               key={trip.id}
@@ -263,6 +285,32 @@ export default function Dashboard() {
               <p className="text-gray-500 mb-4">You haven't planned any trips yet.</p>
               <Button variant="outline" onClick={() => navigate('/create-trip')}>Plan your first trip →</Button>
             </div>
+=======
+          {tripsLoading ? (
+            <p className="text-gray-600">Loading your trips...</p>
+          ) : trips.length === 0 ? (
+            <Card className="p-8 col-span-full text-center">
+              <p className="text-gray-600 mb-4">You haven't created any trips yet.</p>
+              <Button onClick={() => navigate('/create-trip')}>
+                <Plus className="h-5 w-5 mr-2" />
+                Create Your First Trip
+              </Button>
+            </Card>
+          ) : (
+            trips.slice(0, 3).map((trip) => (
+              <TripCard
+                key={trip.id}
+                title={trip.name}
+                destination={trip.description.match(/Destination:\s*([^|]+)/)?.[1] || trip.description}
+                startDate={trip.start_date}
+                endDate={trip.end_date}
+                image={trip.cover_image || 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg'}
+                budget={trip.description.match(/Budget:\s*([^|]+)/)?.[1] || 'N/A'}
+                status={trip.status}
+                onClick={() => navigate(`/itinerary/${trip.id}`)}
+              />
+            ))
+>>>>>>> Stashed changes
           )}
         </div>
       </div>
