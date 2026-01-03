@@ -4,6 +4,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
+import Input from '../components/Input';
 import { createTrip } from '../api/axiosInstance';
 
 interface ItinerarySection {
@@ -25,11 +26,12 @@ interface TripData {
 export default function BuildItinerary() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { tripData, selectedDestination, selectedAttractions } = location.state as {
-    tripData?: TripData;
-    selectedDestination?: any;
-    selectedAttractions?: any[];
-  } || {};
+  const { tripData, selectedDestination, selectedAttractions } =
+    (location.state as {
+      tripData?: TripData;
+      selectedDestination?: any;
+      selectedAttractions?: any[];
+    }) || {};
   
   const [sections, setSections] = useState<ItinerarySection[]>([
     { 
@@ -58,80 +60,12 @@ export default function BuildItinerary() {
     ]);
   };
 
-  const loadHotels = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchHotels({
-        city: destination?.city_name || 'Paris',
-        check_in: tripData?.startDate || '2026-06-01',
-        check_out: tripData?.endDate || '2026-06-10'
-      });
-      setHotels(data.results || []);
-      setCurrentStep('hotels');
-    } catch (err: any) {
-      setError(err.message || 'Failed to load hotels');
-    } finally {
-      setLoading(false);
-    }
+  const updateSection = (sectionId: number, field: keyof Omit<ItinerarySection, 'id'>, value: string) => {
+    setSections((prev) => prev.map((s) => (s.id === sectionId ? { ...s, [field]: value } : s)));
   };
 
-  const handleComplete = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await createTrip({
-        name: tripData?.name || `Trip to ${destination.city_name}`,
-        start_date: tripData?.startDate,
-        end_date: tripData?.endDate,
-        destination_data: destination,
-        attractions_data: attractions,
-        flight_data: selectedFlight,
-        hotel_data: selectedHotel
-      });
-      setCurrentStep('complete');
-    } catch (err: any) {
-      setError(err.message || 'Failed to save itinerary');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderStepIcon = (step: Step) => {
-    switch (step) {
-      case 'summary': return <Globe className="w-5 h-5" />;
-      case 'flights': return <Plane className="w-5 h-5" />;
-      case 'hotels': return <Hotel className="w-5 h-5" />;
-      case 'complete': return <CheckCircle2 className="w-5 h-5" />;
-    }
-  };
-
-  const renderStepProgressBar = () => {
-    const steps: Step[] = ['summary', 'flights', 'hotels', 'complete'];
-    const currentIndex = steps.indexOf(currentStep);
-
-    return (
-      <div className="flex items-center justify-center mb-12">
-        {steps.map((step, index) => (
-          <div key={step} className="flex items-center">
-            <div className={`flex flex-col items-center relative`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${index <= currentIndex ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'
-                }`}>
-                {renderStepIcon(step)}
-              </div>
-              <span className={`absolute -bottom-7 text-xs font-bold uppercase tracking-wider ${index <= currentIndex ? 'text-green-700' : 'text-gray-400'
-                }`}>
-                {step}
-              </span>
-            </div>
-            {index < steps.length - 1 && (
-              <div className={`w-16 h-1 mt-[-1rem] mx-2 ${index < currentIndex ? 'bg-green-600' : 'bg-gray-200'
-                }`} />
-            )}
-          </div>
-        ))}
-      </div>
-    );
+  const removeSection = (sectionId: number) => {
+    setSections((prev) => prev.filter((s) => s.id !== sectionId));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -180,6 +114,21 @@ export default function BuildItinerary() {
     }
   };
 
+  if (!tripData) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Card className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Build Your Itinerary</h1>
+            <p className="text-gray-600 mb-6">No trip data found. Start from Create Trip to continue.</p>
+            <Button onClick={() => navigate('/create-trip')}>Go to Create Trip</Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navbar />
@@ -189,14 +138,17 @@ export default function BuildItinerary() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Build Your Itinerary</h1>
           <p className="text-gray-600">Organize your trip into sections with dates and budget</p>
           
-          {tripData && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <h2 className="font-semibold text-gray-900">{tripData.name}</h2>
-              <p className="text-sm text-gray-600">
-                {selectedDestination?.label || tripData.destination} • {tripData.startDate} to {tripData.endDate}
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <h2 className="font-semibold text-gray-900">{tripData.name}</h2>
+            <p className="text-sm text-gray-600">
+              {selectedDestination?.label || tripData.destination} • {tripData.startDate} to {tripData.endDate}
+            </p>
+            {Array.isArray(selectedAttractions) && selectedAttractions.length > 0 && (
+              <p className="text-sm text-gray-600 mt-1">
+                {selectedAttractions.length} activities selected
               </p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
