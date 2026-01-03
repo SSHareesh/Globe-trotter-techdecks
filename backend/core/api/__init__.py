@@ -1,3 +1,1 @@
-from .auth import *
-
-__all__ = []
+# API package

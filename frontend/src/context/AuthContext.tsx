@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 } catch (error) {
                     console.error("Failed to fetch profile", error);
                     localStorage.removeItem('tokens');
+                    setUser(null);
                 }
             }
             setLoading(false);

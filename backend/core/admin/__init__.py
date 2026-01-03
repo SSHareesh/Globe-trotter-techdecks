@@ -1,11 +1,3 @@
-from .user_admin import UserAdmin
-from .app_admins import CityAdmin, ActivityAdmin, TripAdmin, TripStopAdmin, TripActivityAdmin
+# Admin package
 
-__all__ = [
-    'UserAdmin',
-    'CityAdmin',
-    'ActivityAdmin',
-    'TripAdmin',
-    'TripStopAdmin',
-    'TripActivityAdmin',
-]
+from core.admin.community import PostAdmin, PostLikeAdmin, CommentAdmin

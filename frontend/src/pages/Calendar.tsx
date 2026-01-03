@@ -1,116 +1,115 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import Button from '../components/Button';
-import Card from '../components/Card';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Calendar() {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 5, 1));
-
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
-
-  const firstDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  ).getDay();
+  // Set to January 2026 as per your image
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1));
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const tripDates = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-  const previousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
+  // Calendar Calculation Logic
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
+  const previousMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+
+  // Dummy Trip Data - To be replaced by your Django API
+  const trips = [
+    { day: 15, title: 'Summer in Ooty' },
+    { day: 16, title: 'Summer in Ooty' },
+    { day: 17, title: 'Summer in Ooty' },
+  ];
+
+  // Create the full 42-cell grid (6 weeks)
+  const calendarGrid = [];
+  // Previous month padding
+  for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+    calendarGrid.push({ day: daysInPrevMonth - i, isCurrent: false });
+  }
+  // Current month days
+  for (let i = 1; i <= daysInMonth; i++) {
+    calendarGrid.push({ day: i, isCurrent: true });
+  }
+  // Next month padding
+  const remaining = 42 - calendarGrid.length;
+  for (let i = 1; i <= remaining; i++) {
+    calendarGrid.push({ day: i, isCurrent: false });
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Trip Calendar</h1>
-          <p className="text-gray-600">View and manage your travel schedule</p>
+    <div className='min-h-screen bg-gray-50'>
+      <Navbar/>
+    <div className="min-h-screen bg-white py-12 px-4">
+      <div className="max-w-3xl mx-auto">
+        
+        {/* Page Title */}
+        <div className="mb-6">
+          <h1 className="text-xl font-medium text-gray-600">View your trip schedule</h1>
         </div>
 
-        <Card className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        {/* Calendar Card */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          
+          {/* Header with Navigation */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <button onClick={previousMonth} className="p-2 hover:bg-gray-50 rounded-lg transition">
+              <ChevronLeft className="w-5 h-5 text-gray-400" />
+            </button>
+            <h2 className="text-xl font-bold text-gray-800">
+              {monthNames[month]} {year}
             </h2>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={previousMonth}>
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-              <Button variant="outline" size="sm" onClick={nextMonth}>
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
+            <button onClick={nextMonth} className="p-2 hover:bg-gray-50 rounded-lg transition">
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 mb-2">
+          {/* Weekday Names */}
+          <div className="grid grid-cols-7 border-b border-gray-100">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div
-                key={day}
-                className="text-center font-semibold text-gray-700 py-2"
-              >
+              <div key={day} className="py-4 text-center text-sm font-semibold text-gray-500 uppercase tracking-wider">
                 {day}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-              <div key={`empty-${index}`} className="aspect-square" />
-            ))}
-
-            {Array.from({ length: daysInMonth }).map((_, index) => {
-              const day = index + 1;
-              const isTrip = tripDates.includes(day);
-              const isToday = day === 10;
-
+          {/* Date Grid */}
+          <div className="grid grid-cols-7 bg-gray-100 gap-[1px]">
+            {calendarGrid.map((cell, index) => {
+              const tripToday = cell.isCurrent && trips.find(t => t.day === cell.day);
+              
               return (
-                <button
-                  key={day}
-                  className={`aspect-square p-2 rounded-lg transition-all ${
-                    isTrip
-                      ? 'bg-gradient-to-br from-green-600 to-green-500 text-white font-semibold hover:shadow-lg'
-                      : isToday
-                      ? 'bg-green-100 text-green-700 font-semibold'
-                      : 'hover:bg-gray-100 text-gray-700'
+                <div 
+                  key={index} 
+                  className={`min-h-[120px] bg-white p-3 transition-colors ${
+                    !cell.isCurrent ? 'text-gray-300' : 'text-gray-700'
                   }`}
                 >
-                  {day}
-                </button>
+                  <span className="text-sm font-semibold">{cell.day}</span>
+                  
+                  {/* Trip Badge - Exactly like the image */}
+                  {tripToday && (
+                    <div className="mt-4">
+                      <div className="bg-green-600 text-white text-[11px] md:text-xs py-1.5 px-3 rounded-md font-medium truncate shadow-sm">
+                        {tripToday.title}
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
-
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="font-semibold text-gray-900 mb-4">Upcoming Trips</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <div className="w-3 h-3 bg-green-600 rounded-full" />
-                <div>
-                  <p className="font-semibold text-gray-900">Summer in Santorini</p>
-                  <p className="text-sm text-gray-600">June 15 - June 25, 2026</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
+        </div>
       </div>
+    </div>
     </div>
   );
 }
