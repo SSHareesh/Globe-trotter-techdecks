@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     # Third party
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_filters',
     
     # Local
     'core.apps.CoreConfig',
+    'landing.apps.LandingConfig',
 ]
 
 MIDDLEWARE = [
@@ -96,6 +98,65 @@ DATABASES = {
     }
 }
 
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': config('DRF_THROTTLE_ANON', default='60/min'),
+        'user': config('DRF_THROTTLE_USER', default='120/min'),
+    },
+}
+
+# Simple JWT
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=config('JWT_ACCESS_TOKEN_LIFETIME', default=60, cast=int)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=config('JWT_REFRESH_TOKEN_LIFETIME', default=1440, cast=int)),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
+# CORS
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Cache (Phase 1)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'globetrotter-cache',
+        'TIMEOUT': config('CACHE_DEFAULT_TTL_SECONDS', default=3600, cast=int),
+    }
+}
+
+# Landing integrations (Phase 1)
+LANDING_INTEGRATIONS = {
+    'openweather': bool(config('OPENWEATHER_API_KEY', default='')),
+    'geoapify': bool(config('GEOAPIFY_API_KEY', default='')),
+    'amadeus': bool(config('AMADEUS_CLIENT_ID', default='')) and bool(config('AMADEUS_CLIENT_SECRET', default='')),
+    'rapidapi_booking': bool(config('RAPIDAPI_KEY', default='')) and bool(config('RAPIDAPI_HOTEL_HOST', default='')),
+    'groq': bool(config('GROQ_API_KEY', default='')),
+    'pexels': bool(config('PEXELS_API_KEY', default='')),
+    'serpapi': bool(config('SERPAPI_KEY', default='')),
+}
+
+# Outbound HTTP defaults (Phase 1)
+OUTBOUND_HTTP_TIMEOUT_SECONDS = config('OUTBOUND_HTTP_TIMEOUT_SECONDS', default=6.0, cast=float)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
