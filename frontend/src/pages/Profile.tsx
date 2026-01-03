@@ -1,18 +1,38 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit2, MapPin, Globe, Calendar } from 'lucide-react';
+import { Edit2, MapPin, Globe, Calendar, User as UserIcon } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import TripCard from '../components/TripCard';
-import { userData, trips } from '../data/dummyData';
+import { trips } from '../data/dummyData';
+import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
   const upcomingTrips = trips.filter(t => t.status === 'upcoming');
   const completedTrips = trips.filter(t => t.status === 'completed');
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">You need to be logged in to view your profile.</p>
+          <Button onClick={() => navigate('/')}>Login</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Use absolute URLs for images returned by Django
+  const getImageUrl = (path: string | null) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `http://127.0.0.1:8000${path}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -22,20 +42,26 @@ export default function Profile() {
         <Card className="p-8 mb-8">
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-shrink-0">
-              <img
-                src={userData.avatar}
-                alt={`${userData.firstName} ${userData.lastName}`}
-                className="w-32 h-32 rounded-full object-cover border-4 border-green-100"
-              />
+              {user.profile_image ? (
+                <img
+                  src={getImageUrl(user.profile_image)!}
+                  alt={user.name}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-green-100"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center border-4 border-green-50">
+                  <UserIcon className="h-16 w-16 text-gray-400" />
+                </div>
+              )}
             </div>
 
             <div className="flex-1">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">
-                    {userData.firstName} {userData.lastName}
+                    {user.name}
                   </h1>
-                  <p className="text-gray-600 mt-1">{userData.bio}</p>
+                  <p className="text-gray-600 mt-1">{user.bio || 'Traveler exploring the world via GlobalTrotter.'}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -51,26 +77,26 @@ export default function Profile() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="flex items-center gap-3 text-gray-700">
                   <MapPin className="h-5 w-5 text-green-600" />
-                  <span>{userData.city}, {userData.country}</span>
+                  <span>{user.city && user.country ? `${user.city}, ${user.country}` : user.city || user.country || 'Location not set'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <Globe className="h-5 w-5 text-green-600" />
-                  <span>{userData.countries} Countries Visited</span>
+                  <span>8 Countries Visited</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-700">
                   <Calendar className="h-5 w-5 text-green-600" />
-                  <span>{userData.totalTrips} Total Trips</span>
+                  <span>12 Total Trips</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-gray-700">Email:</span>
-                  <span className="ml-2 text-gray-600">{userData.email}</span>
+                  <span className="ml-2 text-gray-600">{user.email}</span>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Phone:</span>
-                  <span className="ml-2 text-gray-600">{userData.phone}</span>
+                  <span className="ml-2 text-gray-600">{user.phone || 'Not provided'}</span>
                 </div>
               </div>
             </div>
@@ -79,7 +105,7 @@ export default function Profile() {
 
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Preplanned Trips</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Upcoming Trips</h2>
             <Button
               variant="outline"
               size="sm"

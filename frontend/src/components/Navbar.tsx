@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, Bell, User, Globe, MapPin, Users, Calendar } from 'lucide-react';
+import { Search, Bell, User, Globe, MapPin, Users, Calendar, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   showSearch?: boolean;
@@ -8,8 +9,10 @@ interface NavbarProps {
 export default function Navbar({ showSearch = true }: NavbarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navLinks = [
+    { path: '/dashboard', label: 'Home', icon: Globe },
     { path: '/trips', label: 'My Trips', icon: MapPin },
     { path: '/community', label: 'Community', icon: Users },
     { path: '/calendar', label: 'Calendar', icon: Calendar }
@@ -34,11 +37,10 @@ export default function Navbar({ showSearch = true }: NavbarProps) {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isActive
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${isActive
                       ? 'text-green-600 bg-green-50'
                       : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
-                  }`}
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   {link.label}
@@ -65,12 +67,36 @@ export default function Navbar({ showSearch = true }: NavbarProps) {
             <button className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
               <Bell className="h-6 w-6" />
             </button>
-            <button
-              onClick={() => navigate('/profile')}
-              className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-            >
-              <User className="h-6 w-6" />
-            </button>
+
+            {user ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center gap-2 p-1 pl-2 pr-3 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full border border-gray-100 transition-colors"
+                >
+                  {user.profile_image ? (
+                    <img src={user.profile_image.startsWith('http') ? user.profile_image : `http://127.0.0.1:8000${user.profile_image}`} alt={user.name} className="h-8 w-8 rounded-full object-cover" />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                  <span className="text-sm font-medium">{user.name.split(' ')[0]}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
+                  className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/" className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition font-medium">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>

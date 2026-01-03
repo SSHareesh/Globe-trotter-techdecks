@@ -11,26 +11,29 @@ import ItineraryView from './pages/ItineraryView';
 import Community from './pages/Community';
 import Calendar from './pages/Calendar';
 import Admin from './pages/Admin';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create-trip" element={<CreateTrip />} />
-        <Route path="/build-itinerary" element={<BuildItinerary />} />
-        <Route path="/trips" element={<Trips />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/itinerary/:id" element={<ItineraryView />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-trip" element={<CreateTrip />} />
+          <Route path="/build-itinerary" element={<BuildItinerary />} />
+          <Route path="/trips" element={<Trips />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/itinerary/:id" element={<ItineraryView />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
