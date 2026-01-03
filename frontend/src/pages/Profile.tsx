@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import TripCard from '../components/TripCard';
-import { trips } from '../data/dummyData';
+import { trips } from '../data/yourtrips';
 import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
@@ -34,7 +34,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar showSearch={false} />
+      <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Card className="p-8 mb-8">
@@ -59,6 +59,7 @@ export default function Profile() {
                   <h1 className="text-3xl font-bold text-gray-900">
                     {user.name}
                   </h1>
+                  <p className="text-gray-600 mt-1">{user.bio || 'Traveler exploring the world via GlobeTrotter.'}</p>
                 </div>
                 <Button
                   variant="outline"

@@ -47,8 +47,8 @@ export default function BuildItinerary() {
       // For demo/test, we use 'BLR' as origin if not provided, or hardcode for now
       // Real app would ask for origin in CreateTrip
       const data = await fetchFlights({
-        origin: 'JFK',
-        destination: destination?.iata_code || 'LHR',
+        origin: 'MAA',
+        destination: destination?.iata_code || 'DEL',
         departure_date: tripData?.startDate || '2026-06-01',
         return_date: tripData?.endDate || '2026-06-10'
       });
@@ -288,7 +288,7 @@ export default function BuildItinerary() {
 
                       <div className="p-6 md:w-48 flex flex-col items-center justify-center bg-green-600 text-white gap-2">
                         <p className="text-sm font-bold opacity-80 uppercase tracking-tighter">Total Price</p>
-                        <p className="text-3xl font-black">${flight.price.total}</p>
+                        <p className="text-3xl font-black">{flight.price.currency === 'INR' ? '₹' : (flight.price.currency || '$')}{flight.price.total}</p>
                         <div className={`mt-2 p-1 rounded-full bg-white transition-opacity ${isSelected ? 'opacity-100' : 'opacity-20'}`}>
                           <CheckCircle2 className="w-6 h-6 text-green-600" />
                         </div>
@@ -315,7 +315,7 @@ export default function BuildItinerary() {
                 {selectedFlight && (
                   <div className="text-right">
                     <p className="text-xs font-bold text-gray-400 uppercase">Selected Flight</p>
-                    <p className="text-xl font-bold text-gray-900">${selectedFlight.price.total}</p>
+                    <p className="text-xl font-bold text-gray-900">{selectedFlight.price.currency === 'INR' ? '₹' : (selectedFlight.price.currency || '$')}{selectedFlight.price.total}</p>
                   </div>
                 )}
                 <Button size="lg" onClick={loadHotels} disabled={!selectedFlight || loading} className="px-12 flex items-center gap-2 shadow-xl shadow-green-200">
@@ -367,7 +367,7 @@ export default function BuildItinerary() {
                       <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                         <div>
                           <p className="text-[10px] text-gray-400 font-bold uppercase">Price per night</p>
-                          <p className="text-2xl font-black text-green-700">{hotel.rate_per_night?.lowest || '$120'}</p>
+                          <p className="text-2xl font-black text-green-700">{hotel.rate_per_night?.lowest?.includes('$') ? hotel.rate_per_night?.lowest.replace('$', '₹') : (hotel.rate_per_night?.lowest || '₹10,000')}</p>
                         </div>
                         <Button variant={isSelected ? 'outline' : 'primary'} size="sm" className="rounded-xl px-6">
                           {isSelected ? 'Selected' : 'Select'}

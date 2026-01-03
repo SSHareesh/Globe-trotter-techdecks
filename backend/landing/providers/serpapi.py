@@ -23,8 +23,8 @@ def search_hotels(city_name: str, check_in_date: str, check_out_date: str, timeo
         'check_out_date': check_out_date,
         'api_key': api_key,
         'hl': 'en',
-        'gl': 'us',
-        'currency': 'USD',
+        'gl': 'in',
+        'currency': 'INR',
     }
     
     url = f"https://serpapi.com/search?{urlencode(params)}"

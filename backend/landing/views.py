@@ -476,3 +476,39 @@ class TripSearchHotelsView(LandingAPIView):
             check_out_date=check_out
         )
         return Response({'results': hotels})
+
+
+class TripAIEnhanceView(LandingAPIView):
+    """Enhance a trip itinerary using AI."""
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+    
+    def post(self, request):
+        from landing.providers.groq import generate_itinerary_enhancement
+        
+        destination = request.data.get('destination')
+        duration = request.data.get('duration')
+        current_activities = request.data.get('activities', [])
+        hotel = request.data.get('hotel')
+        
+        if not destination or not duration:
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_params',
+                message='destination and duration are required.'
+            )
+            
+        try:
+            enhanced_days = generate_itinerary_enhancement(
+                destination=destination,
+                duration=int(duration),
+                current_activities=current_activities,
+                hotel=hotel
+            )
+            return Response({'days': enhanced_days})
+        except Exception as e:
+            return error_response(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                code='ai_failed',
+                message=str(e)
+            )

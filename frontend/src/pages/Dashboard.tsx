@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import TripCard from '../components/TripCard';
 import Card from '../components/Card';
 import { fetchTrendingDestinations, fetchDestinations } from '../api/landingApi';
-import { trips } from '../data/dummyData';
+import { getTrips } from '../api/tripApi';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,9 +15,11 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
+  const [trips, setTrips] = useState<any[]>([]);
 
   useEffect(() => {
     loadTrendingDestinations();
+    loadRealTrips();
   }, []);
 
   const loadTrendingDestinations = async () => {
@@ -29,6 +31,16 @@ export default function Dashboard() {
       console.error('Failed to load destinations:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadRealTrips = async () => {
+    try {
+      const responseData = await getTrips();
+      const data = Array.isArray(responseData) ? responseData : (responseData.results || []);
+      setTrips(data.slice(0, 3)); // Just show recent 3
+    } catch (error) {
+      console.error('Failed to load real trips:', error);
     }
   };
 
@@ -154,46 +166,41 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {destinations.slice(0, 6).map((destination) => (
-              <Card 
-                key={destination.iata_code} 
-                hover 
+              <Card
+                key={destination.iata_code}
+                hover
                 onClick={() => handleDestinationClick(destination)}
-                className={`cursor-pointer transform transition-all duration-300 ${
-                  selectedDestination === destination.iata_code 
-                    ? 'ring-4 ring-green-500 scale-105 shadow-2xl shadow-green-500/50' 
-                    : 'hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-green-300'
-                }`}
+                className={`cursor-pointer transform transition-all duration-300 ${selectedDestination === destination.iata_code
+                  ? 'ring-4 ring-green-500 scale-105 shadow-2xl shadow-green-500/50'
+                  : 'hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-green-300'
+                  }`}
               >
                 <div className="relative h-64 overflow-hidden rounded-t-xl group">
                   <img
                     src={destination.image_url || 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=600'}
                     alt={destination.city_name}
-                    className={`w-full h-full object-cover transition-all duration-500 ${
-                      selectedDestination === destination.iata_code
-                        ? 'scale-110 brightness-110'
-                        : 'group-hover:scale-110 group-hover:brightness-110'
-                    }`}
+                    className={`w-full h-full object-cover transition-all duration-500 ${selectedDestination === destination.iata_code
+                      ? 'scale-110 brightness-110'
+                      : 'group-hover:scale-110 group-hover:brightness-110'
+                      }`}
                   />
-                  <div className={`absolute inset-0 transition-all duration-300 ${
-                    selectedDestination === destination.iata_code
-                      ? 'bg-gradient-to-t from-green-900/70 via-green-600/20 to-transparent'
-                      : 'bg-gradient-to-t from-black/60 to-transparent group-hover:from-green-900/60'
-                  }`} />
-                  
+                  <div className={`absolute inset-0 transition-all duration-300 ${selectedDestination === destination.iata_code
+                    ? 'bg-gradient-to-t from-green-900/70 via-green-600/20 to-transparent'
+                    : 'bg-gradient-to-t from-black/60 to-transparent group-hover:from-green-900/60'
+                    }`} />
+
                   {/* Animated overlay on hover */}
                   <div className="absolute inset-0 bg-green-500/0 group-hover:bg-green-500/10 transition-all duration-300" />
-                  
+
                   {/* Selected Badge - shows on hover OR when selected */}
-                  <div className={`absolute top-4 right-4 transition-all duration-300 ${
-                    selectedDestination === destination.iata_code 
-                      ? 'animate-bounce opacity-100' 
-                      : 'opacity-0 group-hover:opacity-100 group-hover:animate-pulse'
-                  }`}>
-                    <div className={`text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 ${
-                      selectedDestination === destination.iata_code
-                        ? 'bg-gradient-to-r from-green-500 to-green-600'
-                        : 'bg-gradient-to-r from-green-400 to-green-500'
+                  <div className={`absolute top-4 right-4 transition-all duration-300 ${selectedDestination === destination.iata_code
+                    ? 'animate-bounce opacity-100'
+                    : 'opacity-0 group-hover:opacity-100 group-hover:animate-pulse'
                     }`}>
+                    <div className={`text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 ${selectedDestination === destination.iata_code
+                      ? 'bg-gradient-to-r from-green-500 to-green-600'
+                      : 'bg-gradient-to-r from-green-400 to-green-500'
+                      }`}>
                       {selectedDestination === destination.iata_code && (
                         <>
                           <span className="w-2 h-2 bg-white rounded-full animate-ping absolute"></span>
@@ -203,7 +210,7 @@ export default function Dashboard() {
                       <span>{selectedDestination === destination.iata_code ? 'Selected' : 'Select'}</span>
                     </div>
                   </div>
-                  
+
                   {selectedDestination === destination.iata_code && (
                     <>
                       {/* Animated corner accents - only when selected */}
@@ -211,16 +218,14 @@ export default function Dashboard() {
                       <div className="absolute bottom-0 right-0 w-20 h-20 border-b-4 border-r-4 border-green-400 animate-pulse"></div>
                     </>
                   )}
-                  
-                  <div className={`absolute bottom-4 left-4 text-white transition-all duration-300 ${
-                    selectedDestination === destination.iata_code ? 'transform translate-x-2' : ''
-                  }`}>
+
+                  <div className={`absolute bottom-4 left-4 text-white transition-all duration-300 ${selectedDestination === destination.iata_code ? 'transform translate-x-2' : ''
+                    }`}>
                     <h3 className="text-2xl font-bold mb-1 drop-shadow-lg">{destination.city_name}</h3>
-                    <p className={`transition-all duration-300 ${
-                      selectedDestination === destination.iata_code 
-                        ? 'text-green-200 font-semibold' 
-                        : 'text-green-100'
-                    }`}>{destination.country_name}</p>
+                    <p className={`transition-all duration-300 ${selectedDestination === destination.iata_code
+                      ? 'text-green-200 font-semibold'
+                      : 'text-green-100'
+                      }`}>{destination.country_name}</p>
                   </div>
                 </div>
               </Card>
@@ -243,16 +248,22 @@ export default function Dashboard() {
           {trips.map((trip) => (
             <TripCard
               key={trip.id}
-              title={trip.title}
-              destination={trip.destination}
-              startDate={trip.startDate}
-              endDate={trip.endDate}
-              image={trip.image}
-              budget={trip.budget}
-              status={trip.status}
+              title={trip.name}
+              destination={trip.destination_data?.city_name || 'Global'}
+              startDate={trip.start_date}
+              endDate={trip.end_date}
+              image={trip.destination_data?.image || trip.destination_data?.image_url || 'https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg'}
+              budget={trip.flight_data?.price?.total ? `₹${trip.flight_data.price.total}` : undefined}
+              status={new Date() > new Date(trip.end_date) ? 'completed' : (new Date() >= new Date(trip.start_date) ? 'ongoing' : 'upcoming')}
               onClick={() => navigate(`/itinerary/${trip.id}`)}
             />
           ))}
+          {!loading && trips.length === 0 && (
+            <div className="col-span-full text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-100">
+              <p className="text-gray-500 mb-4">You haven't planned any trips yet.</p>
+              <Button variant="outline" onClick={() => navigate('/create-trip')}>Plan your first trip →</Button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -30,6 +30,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     profile_image = models.TextField(null=True, blank=True)  # Using TextField to match user's SQL "TEXT"
     language_preference = models.TextField(null=True, blank=True, default='en')  # Using TEXT
+    bio = models.TextField(null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     is_active = models.BooleanField(default=True)

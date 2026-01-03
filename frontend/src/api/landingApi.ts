@@ -99,3 +99,14 @@ export async function fetchHotels(params: { city: string, check_in: string, chec
   const res = await fetch(buildUrl('/api/v1/landing/trip/hotels/', params as any));
   return handleResponse(res);
 }
+
+export async function enhanceTrip(data: { destination: string, duration: number, activities: any[], hotel?: string }) {
+  const res = await fetch(buildUrl('/api/v1/landing/trip/enhance/'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(res);
+}

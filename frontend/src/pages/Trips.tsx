@@ -1,14 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TripCard from '../components/TripCard';
-import { trips } from '../data/dummyData';
+import { getTrips } from '../api/tripApi';
+import { Loader2 } from 'lucide-react';
 
 type TripStatus = 'all' | 'ongoing' | 'upcoming' | 'completed';
 
 export default function Trips() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TripStatus>('all');
+  const [trips, setTrips] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadTrips();
+  }, []);
+
+  const loadTrips = async () => {
+    try {
+      setLoading(true);
+      const responseData = await getTrips();
+      // Handle paginated response: DRF returns { results: [] } if pagination is on
+      const data = Array.isArray(responseData) ? responseData : (responseData.results || []);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const tripsWithStatus = data.map((trip: any) => {
+        const start = new Date(trip.start_date);
+        const end = new Date(trip.end_date);
+        let status: TripStatus = 'upcoming';
+
+        if (today >= start && today <= end) {
+          status = 'ongoing';
+        } else if (today > end) {
+          status = 'completed';
+        }
+
+        return {
+          ...trip,
+          status,
+          // Extract image from destination_data or use fallback
+          image: trip.destination_data?.image || trip.destination_data?.image_url || 'https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg'
+        };
+      });
+
+      setTrips(tripsWithStatus);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load trips');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredTrips = activeTab === 'all'
     ? trips
@@ -21,6 +66,17 @@ export default function Trips() {
     { id: 'completed' as const, label: 'Completed', count: trips.filter(t => t.status === 'completed').length }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center h-[calc(100-80px)] mt-20">
+          <Loader2 className="w-12 h-12 text-green-600 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -31,17 +87,22 @@ export default function Trips() {
           <p className="text-gray-600">Manage and view all your travel plans</p>
         </div>
 
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-center">
+            {error}
+          </div>
+        )}
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
           <div className="flex border-b border-gray-200">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === tab.id
+                  ? 'text-green-600 border-b-2 border-green-600'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
                 {tab.label}
                 <span className="ml-2 px-2 py-1 rounded-full text-xs bg-gray-100">
@@ -57,12 +118,12 @@ export default function Trips() {
             {filteredTrips.map((trip) => (
               <TripCard
                 key={trip.id}
-                title={trip.title}
-                destination={trip.destination}
-                startDate={trip.startDate}
-                endDate={trip.endDate}
+                title={trip.name}
+                destination={trip.destination_data?.city_name || 'Global'}
+                startDate={trip.start_date}
+                endDate={trip.end_date}
                 image={trip.image}
-                budget={trip.budget}
+                budget={trip.flight_data?.price?.total ? `₹${trip.flight_data.price.total}` : undefined}
                 status={trip.status}
                 onClick={() => navigate(`/itinerary/${trip.id}`)}
               />

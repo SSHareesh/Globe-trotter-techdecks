@@ -6,6 +6,10 @@ interface User {
     email: string;
     name: string;
     profile_image: string | null;
+    bio: string | null;
+    city: string | null;
+    country: string | null;
+    phone: string | null;
     language_preference: string | null;
     created_at: string;
 }
@@ -34,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 } catch (error) {
                     console.error("Failed to fetch profile", error);
                     localStorage.removeItem('tokens');
+                    setUser(null);
                 }
             }
             setLoading(false);

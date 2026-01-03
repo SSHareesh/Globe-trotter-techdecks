@@ -185,7 +185,7 @@ def search_flights_offer(
             'departureDate': departure_date,
             'adults': adults,
             'max': limit,
-            'currencyCode': 'USD',
+            'currencyCode': 'INR',
         }
         if return_date:
             params['returnDate'] = return_date
