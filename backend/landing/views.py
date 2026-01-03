@@ -14,7 +14,8 @@ from landing.services.cache import cache_get_or_set
 from landing.services.http import UpstreamError
 
 
-# Default popular destinations for Screen 3 initial load (Indian cities)
+# Default popular destinations for Screen 3 initial load  
+# Mix of Indian + international cities that work in Amadeus test environment
 DEFAULT_DESTINATIONS = [
     {'name': 'Chennai', 'country': 'IN'},
     {'name': 'Mumbai', 'country': 'IN'},
@@ -24,6 +25,12 @@ DEFAULT_DESTINATIONS = [
     {'name': 'Kolkata', 'country': 'IN'},
     {'name': 'Goa', 'country': 'IN'},
     {'name': 'Jaipur', 'country': 'IN'},
+    {'name': 'London', 'country': 'GB'},
+    {'name': 'Paris', 'country': 'FR'},
+    {'name': 'New York', 'country': 'US'},
+    {'name': 'Singapore', 'country': 'SG'},
+    {'name': 'Bangkok', 'country': 'TH'},
+    {'name': 'DXB', 'country': 'AE'},  # Dubai airport code (test API limitation)
 ]
 
 
@@ -158,7 +165,30 @@ class LandingDestinationsView(LandingAPIView):
 
         def compute():
             # Search for up to 15 destinations to have options
-            places = search_cities(q, limit=15, timeout_seconds=timeout)
+            search_query = q
+            places = search_cities(search_query, limit=15, timeout_seconds=timeout)
+            
+            # If no results, try airport code mapping (Amadeus test API limitation workaround)
+            if not places:
+                airport_code_map = {
+                    'dubai': ['DXB', 'DWC'],  # Dubai Int'l and Al Maktoum
+                    'tokyo': ['TYO', 'NRT', 'HND'],  # Tokyo, Narita, Haneda
+                    'madrid': ['MAD'],
+                    'barcelona': ['BCN'],
+                    'rome': ['FCO', 'CIA'],  # Fiumicino and Ciampino
+                    'milan': ['MXP', 'LIN'],  # Malpensa and Linate
+                    'sydney': ['SYD'],
+                    'melbourne': ['MEL'],
+                    'istanbul': ['IST'],
+                    'moscow': ['MOW', 'SVO'],
+                    'beijing': ['PEK'],
+                    'shanghai': ['PVG', 'SHA'],
+                }
+                codes = airport_code_map.get(q.lower(), [])
+                for code in codes:
+                    places = search_cities(code, limit=15, timeout_seconds=timeout)
+                    if places:
+                        break
             
             # Helper to convert place to result dict
             def place_to_result(p):
@@ -201,24 +231,32 @@ class LandingDestinationsView(LandingAPIView):
             # Add other search results
             results.extend(other_matches[:7 if best_match else 8])
             
-            # If we don't have 8 results, fill with default Indian cities
+            # If we don't have 8 results and no specific search was done, fill with defaults
+            # For actual searches, only fill if we got very few results (< 4)
             if len(results) < 8:
-                needed = 8 - len(results)
-                existing_names = {r['name'].lower() for r in results}
-                
-                for default_dest in DEFAULT_DESTINATIONS:
-                    if needed <= 0:
-                        break
-                    if default_dest['name'].lower() not in existing_names:
-                        try:
-                            default_places = search_cities(default_dest['name'], limit=1, timeout_seconds=timeout)
-                            if default_places:
-                                results.append(place_to_result(default_places[0]))
-                                needed -= 1
-                        except Exception:
-                            continue
+                # If it's a real search and we have at least 4 results, don't add defaults
+                # This prevents mixing Dubai results with Indian cities
+                if places and len(results) >= 4:
+                    # Just return what we found, padded to 8 if needed
+                    pass
+                else:
+                    # Either no results or very few - add some popular destinations
+                    needed = 8 - len(results)
+                    existing_names = {r['name'].lower() for r in results}
+                    
+                    for default_dest in DEFAULT_DESTINATIONS:
+                        if needed <= 0:
+                            break
+                        if default_dest['name'].lower() not in existing_names:
+                            try:
+                                default_places = search_cities(default_dest['name'], limit=1, timeout_seconds=timeout)
+                                if default_places:
+                                    results.append(place_to_result(default_places[0]))
+                                    needed -= 1
+                            except Exception:
+                                continue
             
-            return results[:8]  # Ensure exactly 8 results
+            return results  # Return what we found (may be less than 8 for specific searches)
 
         results, cached = cache_get_or_set('destinations', {'q': q}, ttl, compute)
         return Response({
