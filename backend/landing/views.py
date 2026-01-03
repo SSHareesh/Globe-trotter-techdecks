@@ -8,8 +8,9 @@ from rest_framework.throttling import AnonRateThrottle
 
 from landing.api.base import LandingAPIView
 from landing.api.errors import error_response
-from landing.providers.amadeus import search_cities
+from landing.providers.amadeus import search_cities, search_flights_offer
 from landing.providers.pexels import search_image
+from landing.providers.serpapi import search_hotels
 from landing.services.cache import cache_get_or_set
 from landing.services.http import UpstreamError, get_json
 
@@ -423,3 +424,91 @@ class LandingHomeView(LandingAPIView):
             'destinations': destinations,
             'destinations_cached': destinations_cached,
         })
+
+
+class TripSearchFlightsView(LandingAPIView):
+    """Fetch flight offers for a trip."""
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+
+    def get(self, request):
+        origin = request.query_params.get('origin')
+        destination = request.query_params.get('destination')
+        departure_date = request.query_params.get('departure_date')
+        return_date = request.query_params.get('return_date')
+
+        if not all([origin, destination, departure_date]):
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_params',
+                message='origin, destination, and departure_date are required.'
+            )
+
+        flights = search_flights_offer(
+            origin_code=origin,
+            destination_code=destination,
+            departure_date=departure_date,
+            return_date=return_date
+        )
+        return Response({'results': flights})
+
+
+class TripSearchHotelsView(LandingAPIView):
+    """Fetch hotel options for a destination."""
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+
+    def get(self, request):
+        city = request.query_params.get('city')
+        check_in = request.query_params.get('check_in')
+        check_out = request.query_params.get('check_out')
+
+        if not all([city, check_in, check_out]):
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_params',
+                message='city, check_in, and check_out are required.'
+            )
+
+        hotels = search_hotels(
+            city_name=city,
+            check_in_date=check_in,
+            check_out_date=check_out
+        )
+        return Response({'results': hotels})
+
+
+class TripAIEnhanceView(LandingAPIView):
+    """Enhance a trip itinerary using AI."""
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+    
+    def post(self, request):
+        from landing.providers.groq import generate_itinerary_enhancement
+        
+        destination = request.data.get('destination')
+        duration = request.data.get('duration')
+        current_activities = request.data.get('activities', [])
+        hotel = request.data.get('hotel')
+        
+        if not destination or not duration:
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_params',
+                message='destination and duration are required.'
+            )
+            
+        try:
+            enhanced_days = generate_itinerary_enhancement(
+                destination=destination,
+                duration=int(duration),
+                current_activities=current_activities,
+                hotel=hotel
+            )
+            return Response({'days': enhanced_days})
+        except Exception as e:
+            return error_response(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                code='ai_failed',
+                message=str(e)
+            )

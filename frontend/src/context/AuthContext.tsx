@@ -6,11 +6,11 @@ interface User {
     email: string;
     name: string;
     profile_image: string | null;
-    bio: string;
+    bio: string | null;
     city: string | null;
     country: string | null;
     phone: string | null;
-    language_preference: string;
+    language_preference: string | null;
     created_at: string;
 }
 

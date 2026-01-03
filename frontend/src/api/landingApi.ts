@@ -89,3 +89,24 @@ export async function fetchAttractions(city: string, limit: number = 18) {
     })),
   };
 }
+
+export async function fetchFlights(params: { origin: string, destination: string, departure_date: string, return_date?: string }) {
+  const res = await fetch(buildUrl('/api/v1/landing/trip/flights/', params as any));
+  return handleResponse(res);
+}
+
+export async function fetchHotels(params: { city: string, check_in: string, check_out: string }) {
+  const res = await fetch(buildUrl('/api/v1/landing/trip/hotels/', params as any));
+  return handleResponse(res);
+}
+
+export async function enhanceTrip(data: { destination: string, duration: number, activities: any[], hotel?: string }) {
+  const res = await fetch(buildUrl('/api/v1/landing/trip/enhance/'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(res);
+}

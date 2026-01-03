@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from core.api.auth import (
@@ -11,10 +12,15 @@ from core.api.auth import (
     PasswordResetConfirmView,
 )
 from core.api.community import PostListCreateView, CommentListCreateView, like_post
+from core.api.trips import TripViewSet
+
+router = DefaultRouter()
+router.register(r'trips', TripViewSet, basename='trip')
 
 app_name = 'core'
 
 urlpatterns = [
+    path('', include(router.urls)),
     # Authentication
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),
