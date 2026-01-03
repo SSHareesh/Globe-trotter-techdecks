@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from core.api.auth import (
@@ -11,6 +12,14 @@ from core.api.auth import (
     PasswordResetConfirmView,
 )
 from core.api.community import PostListCreateView, CommentListCreateView, like_post
+from core.api.activities import ActivityViewSet, CityViewSet
+from core.api.trips import TripViewSet
+
+# Router for ViewSets
+router = DefaultRouter()
+router.register(r'trips', TripViewSet, basename='trip')
+router.register(r'activities', ActivityViewSet, basename='activity')
+router.register(r'cities', CityViewSet, basename='city')
 
 app_name = 'core'
 
@@ -34,3 +43,6 @@ urlpatterns = [
     path('community/posts/<int:post_id>/like/', like_post, name='post-like'),
     path('community/posts/<int:post_id>/comments/', CommentListCreateView.as_view(), name='post-comments'),
 ]
+
+# Include router URLs
+urlpatterns += router.urls

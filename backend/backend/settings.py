@@ -90,8 +90,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-USE_POSTGRES = config('USE_POSTGRES', default=False, cast=bool)
 _DB_NAME = config('DB_NAME', default='')
+# Prefer Postgres when DB_NAME is provided. Can be explicitly disabled by setting USE_POSTGRES=False.
+USE_POSTGRES = config('USE_POSTGRES', default=bool(_DB_NAME), cast=bool)
 if USE_POSTGRES and _DB_NAME:
     DATABASES = {
         'default': {
