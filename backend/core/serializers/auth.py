@@ -19,6 +19,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'password', 'password2', 'name', 'language_preference')
+        extra_kwargs = {
+            'language_preference': {'required': False}
+        }
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -40,8 +43,9 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
+            # We pass email as username because USERNAME_FIELD is 'email'
             user = authenticate(request=self.context.get('request'),
-                              username=email, password=password)
+                                username=email, password=password)
             if not user:
                 raise serializers.ValidationError('Invalid email or password.')
             if not user.is_active:

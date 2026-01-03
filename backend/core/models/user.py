@@ -28,10 +28,10 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, db_index=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=True, blank=True)
     profile_image = models.ImageField(upload_to='profiles/', null=True, blank=True)
     language_preference = models.CharField(max_length=10, default='en')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     # Standard Django Auth fields
     is_active = models.BooleanField(default=True)
