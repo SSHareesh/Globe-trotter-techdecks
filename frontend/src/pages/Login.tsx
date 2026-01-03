@@ -24,7 +24,7 @@ export default function Login() {
             </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-            GlobalTrotter
+            GlobeTrotter
           </h1>
           <p className="text-gray-600 mt-2">Welcome back! Plan your next adventure</p>
         </div>
