@@ -4,9 +4,9 @@ const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/',
 });
 
-// Request interceptor to add JWT token
 api.interceptors.request.use(
     (config) => {
+<<<<<<< HEAD
         const url = (config.url ?? '').toString();
         const isAuthEndpoint =
             url.includes('auth/login/') ||
@@ -19,6 +19,10 @@ api.interceptors.request.use(
         config.headers = config.headers || {};
 
         // Allow both JSON requests and multipart FormData (e.g. registration with profile_image).
+=======
+        config.headers = config.headers || {};
+
+>>>>>>> 25499e3b98f6746f12c77719fc30ebf8b3e1617f
         const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
         if (!isFormData) {
             if (!config.headers['Content-Type'] && !config.headers['content-type']) {
@@ -49,7 +53,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -90,14 +93,12 @@ export const registerUser = (data: any) => api.post('auth/register/', data);
 export const getProfile = () => api.get('auth/profile/');
 export const updateProfile = (data: FormData) => api.put('auth/profile/', data);
 
-// Community API
 export const getCommunityPosts = (filter?: string) => {
     const params = filter ? { filter } : {};
     return api.get('community/posts/', { params });
 };
 
 export const createCommunityPost = (data: FormData) => {
-    // Don't set Content-Type header, let browser set it with boundary
     return api.post('community/posts/', data);
 };
 

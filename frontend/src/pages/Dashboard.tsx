@@ -99,10 +99,9 @@ export default function Dashboard() {
 
   const handleDestinationClick = (destination: any) => {
     setSelectedDestination(destination.iata_code);
-    // Navigate to create-trip page with destination data
     setTimeout(() => {
       navigate('/create-trip', { state: { destination } });
-    }, 150); // Small delay for visual feedback
+    }, 150); 
   };
 
   return (
@@ -314,13 +313,6 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-
-      <button
-        onClick={() => navigate('/create-trip')}
-        className="fixed bottom-8 right-8 bg-gradient-to-r from-green-600 to-green-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110"
-      >
-        <Plus className="h-8 w-8" />
-      </button>
     </div>
   );
 }

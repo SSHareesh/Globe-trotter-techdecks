@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Globe, Upload, Loader2, User } from 'lucide-react';
+import { Upload, Loader2, User } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
@@ -54,7 +54,6 @@ export default function Register() {
 
     setLoading(true);
 
-    // Use FormData for file upload
     const data = new FormData();
     data.append('email', formData.email);
     data.append('password', formData.password);

@@ -31,7 +31,6 @@ export default function Trips() {
     try {
       setLoading(true);
       const responseData = await getTrips();
-      // Handle paginated response: DRF returns { results: [] } if pagination is on
       const data = Array.isArray(responseData) ? responseData : (responseData.results || []);
 
       const today = new Date();
@@ -51,7 +50,6 @@ export default function Trips() {
         return {
           ...trip,
           status,
-          // Extract image from destination_data or use fallback
           image: trip.destination_data?.image || trip.destination_data?.image_url || 'https://images.pexels.com/photos/2082103/pexels-photo-2082103.jpeg'
         };
       });
