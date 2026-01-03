@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Globe, Upload, Loader2, User } from 'lucide-react';
+import { Globe, User } from 'lucide-react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
@@ -93,7 +94,7 @@ export default function Register() {
             </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-            Join GlobalTrotter
+            Join GlobeTrotter
           </h1>
           <p className="text-gray-600 mt-2">Create your account and start exploring</p>
         </div>
@@ -124,6 +125,14 @@ export default function Register() {
                   <Upload className="h-4 w-4" />
                 </button>
               </div>
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="bg-gray-100 w-32 h-32 rounded-full flex items-center justify-center">
+                <User className="h-12 w-12 text-gray-400" />
+              </div>
+              {/* <button className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-700 transition-colors">
+                <Upload className="h-4 w-4" />
+              </button> */}
             </div>
 
             {error && (
@@ -137,7 +146,7 @@ export default function Register() {
                 label="First Name"
                 name="firstName"
                 type="text"
-                placeholder="John"
+                placeholder=""
                 value={formData.firstName}
                 onChange={handleChange}
                 required
@@ -146,7 +155,7 @@ export default function Register() {
                 label="Last Name"
                 name="lastName"
                 type="text"
-                placeholder="Doe"
+                placeholder=""
                 value={formData.lastName}
                 onChange={handleChange}
                 required
@@ -157,7 +166,7 @@ export default function Register() {
               label="Email"
               name="email"
               type="email"
-              placeholder="john.doe@example.com"
+              placeholder="example@gmail.com"
               value={formData.email}
               onChange={handleChange}
               required
@@ -188,7 +197,7 @@ export default function Register() {
               label="Phone Number"
               name="phone"
               type="tel"
-              placeholder="+1 234 567 8900"
+              placeholder="+91 0987654321"
               value={formData.phone}
               onChange={handleChange}
             />
@@ -198,7 +207,7 @@ export default function Register() {
                 label="City"
                 name="city"
                 type="text"
-                placeholder="San Francisco"
+                placeholder=""
                 value={formData.city}
                 onChange={handleChange}
               />
@@ -206,7 +215,7 @@ export default function Register() {
                 label="Country"
                 name="country"
                 type="text"
-                placeholder="USA"
+                placeholder=""
                 value={formData.country}
                 onChange={handleChange}
               />
