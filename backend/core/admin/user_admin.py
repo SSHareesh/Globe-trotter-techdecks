@@ -5,22 +5,23 @@ from core.models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined')
-    list_filter = ('is_staff', 'is_active', 'date_joined')
-    search_fields = ('email', 'first_name', 'last_name')
-    ordering = ('-date_joined',)
+    list_display = ('email', 'name', 'is_staff', 'is_active', 'created_at')
+    list_filter = ('is_staff', 'is_active', 'created_at')
+    search_fields = ('email', 'name')
+    ordering = ('-created_at',)
     
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name')}),
-        ('Travel Preferences', {'fields': ('preferred_currency', 'travel_style')}),
+        ('Personal Info', {'fields': ('name', 'profile_image', 'language_preference')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important Dates', {'fields': ('last_login', 'date_joined')}),
+        ('Important Dates', {'fields': ('last_login', 'created_at')}),
     )
+    
+    readonly_fields = ('created_at', 'last_login')
     
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'is_staff', 'is_active'),
+            'fields': ('email', 'password1', 'password2', 'name', 'is_staff', 'is_active'),
         }),
     )

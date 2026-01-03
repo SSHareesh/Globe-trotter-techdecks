@@ -7,9 +7,9 @@ from core.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'preferred_currency', 
-                  'travel_style', 'date_joined')
-        read_only_fields = ('id', 'date_joined')
+        fields = ('id', 'email', 'name', 'profile_image', 
+                  'language_preference', 'created_at')
+        read_only_fields = ('id', 'created_at')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'password2', 'first_name', 'last_name')
+        fields = ('email', 'password', 'password2', 'name', 'language_preference')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
