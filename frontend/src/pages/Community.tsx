@@ -44,7 +44,6 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Create post state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostDestination, setNewPostDestination] = useState('');
@@ -53,7 +52,6 @@ export default function Community() {
   const [creating, setCreating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Comment modal state
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -62,10 +60,8 @@ export default function Community() {
   const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
-    // Wait for auth to load first
     if (authLoading) return;
 
-    // Redirect to login if not authenticated
     if (!user) {
       navigate('/');
       return;
@@ -75,7 +71,6 @@ export default function Community() {
   }, [filter, authLoading, user, navigate]);
 
   const loadPosts = async () => {
-    // Don't load if user is not authenticated
     if (!user) return;
 
     try {
@@ -214,7 +209,6 @@ export default function Community() {
     return date.toLocaleDateString();
   };
 
-  // Show loading state while checking authentication
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -229,7 +223,6 @@ export default function Community() {
     );
   }
 
-  // Show login prompt if not authenticated
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50">

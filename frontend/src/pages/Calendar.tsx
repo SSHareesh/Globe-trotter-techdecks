@@ -3,7 +3,6 @@ import Navbar from '../components/Navbar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Calendar() {
-  // Set to January 2026 as per your image
   const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 1));
 
   const monthNames = [
@@ -14,7 +13,6 @@ export default function Calendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  // Calendar Calculation Logic
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const daysInPrevMonth = new Date(year, month, 0).getDate();
@@ -22,24 +20,19 @@ export default function Calendar() {
   const previousMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
 
-  // Dummy Trip Data - To be replaced by your Django API
   const trips = [
     { day: 15, title: 'Summer in Ooty' },
     { day: 16, title: 'Summer in Ooty' },
     { day: 17, title: 'Summer in Ooty' },
   ];
 
-  // Create the full 42-cell grid (6 weeks)
   const calendarGrid = [];
-  // Previous month padding
   for (let i = firstDayOfMonth - 1; i >= 0; i--) {
     calendarGrid.push({ day: daysInPrevMonth - i, isCurrent: false });
   }
-  // Current month days
   for (let i = 1; i <= daysInMonth; i++) {
     calendarGrid.push({ day: i, isCurrent: true });
   }
-  // Next month padding
   const remaining = 42 - calendarGrid.length;
   for (let i = 1; i <= remaining; i++) {
     calendarGrid.push({ day: i, isCurrent: false });

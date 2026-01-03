@@ -4,13 +4,10 @@ const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/api/',
 });
 
-// Request interceptor to add JWT token
 api.interceptors.request.use(
     (config) => {
-        // Ensure headers object exists
         config.headers = config.headers || {};
 
-        // Allow both JSON requests and multipart FormData
         const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
         if (!isFormData) {
             if (!config.headers['Content-Type'] && !config.headers['content-type']) {
@@ -34,7 +31,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token refresh
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -67,14 +63,12 @@ export const loginUser = (data: any) => api.post('auth/login/', data);
 export const registerUser = (data: any) => api.post('auth/register/', data);
 export const getProfile = () => api.get('auth/profile/');
 
-// Community API
 export const getCommunityPosts = (filter?: string) => {
     const params = filter ? { filter } : {};
     return api.get('community/posts/', { params });
 };
 
 export const createCommunityPost = (data: FormData) => {
-    // Don't set Content-Type header, let browser set it with boundary
     return api.post('community/posts/', data);
 };
 

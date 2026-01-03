@@ -52,12 +52,10 @@ export default function Search() {
     const query = e.target.value;
     setSearchQuery(query);
 
-    // Clear existing timeout
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
 
-    // Debounce search
     const timeout = setTimeout(() => {
       handleSearch(query);
     }, 350);
@@ -67,7 +65,6 @@ export default function Search() {
 
   const handleDestinationClick = (destination: any) => {
     setSelectedDestination(destination.iata_code);
-    // Navigate to create-trip page with destination data
     setTimeout(() => {
       navigate('/create-trip', { state: { destination } });
     }, 150);

@@ -44,8 +44,6 @@ export default function BuildItinerary() {
     setLoading(true);
     setError(null);
     try {
-      // For demo/test, we use 'BLR' as origin if not provided, or hardcode for now
-      // Real app would ask for origin in CreateTrip
       const data = await fetchFlights({
         origin: 'MAA',
         destination: destination?.iata_code || 'DEL',

@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import { fetchAttractions } from '../api/landingApi.ts';
 
-// Tourist attractions data for different cities with images
 const TOURIST_PLACES: Record<string, any[]> = {
   'Chennai': [
     { name: 'Marina Beach', type: 'Beach', rating: 4.5, description: 'Second longest urban beach in the world', icon: 'Mountain', image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=400' },
@@ -97,7 +96,6 @@ export default function CreateTrip() {
         const data = await fetchAttractions(cityNameRaw, 24);
         const attractions = data.attractions || [];
         if (!cancelled) {
-          // If backend returns nothing, fall back to local list.
           setTouristPlaces(attractions.length ? attractions : localFallbackPlaces);
         }
       } catch (e: any) {
@@ -114,7 +112,6 @@ export default function CreateTrip() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityKey]);
 
   const toggleAttraction = (index: number) => {
@@ -143,7 +140,6 @@ export default function CreateTrip() {
       return;
     }
 
-    // Pass everything to build-itinerary
     const fullSelectedAttractions = selectedAttractions.map(idx => touristPlaces[idx]);
 
     navigate('/build-itinerary', {

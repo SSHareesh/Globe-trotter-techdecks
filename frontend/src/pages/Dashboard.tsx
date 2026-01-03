@@ -78,10 +78,9 @@ export default function Dashboard() {
 
   const handleDestinationClick = (destination: any) => {
     setSelectedDestination(destination.iata_code);
-    // Navigate to create-trip page with destination data
     setTimeout(() => {
       navigate('/create-trip', { state: { destination } });
-    }, 150); // Small delay for visual feedback
+    }, 150); 
   };
 
   return (
