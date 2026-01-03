@@ -8,6 +8,8 @@ from landing.views import (
     LandingDestinationsView,
     LandingTrendingView,
     LandingAttractionsView,
+    TripSearchFlightsView,
+    TripSearchHotelsView,
 )
 
 app_name = 'landing'
@@ -20,4 +22,6 @@ urlpatterns = [
     path('destinations/', LandingDestinationsView.as_view(), name='destinations'),
     path('trending/', LandingTrendingView.as_view(), name='trending'),
     path('attractions/', LandingAttractionsView.as_view(), name='attractions'),
+    path('trip/flights/', TripSearchFlightsView.as_view(), name='trip_flights'),
+    path('trip/hotels/', TripSearchHotelsView.as_view(), name='trip_hotels'),
 ]

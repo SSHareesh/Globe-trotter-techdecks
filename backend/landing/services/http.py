@@ -55,6 +55,10 @@ def get_json(url: str, *, headers: dict[str, str] | None = None, timeout_seconds
 
     except URLError as e:
         raise UpstreamError('Upstream network error', details=str(e)) from e
+        
+    except (TimeoutError, Exception) as e:
+        # Catch unexpected timeouts or other crashes to prevent 500s
+        raise UpstreamError(f'Upstream connection failed: {type(e).__name__}', details=str(e)) from e
 
 
 def post_form(
@@ -98,3 +102,6 @@ def post_form(
 
     except URLError as e:
         raise UpstreamError('Upstream network error', details=str(e)) from e
+        
+    except (TimeoutError, Exception) as e:
+        raise UpstreamError(f'Upstream connection failed: {type(e).__name__}', details=str(e)) from e

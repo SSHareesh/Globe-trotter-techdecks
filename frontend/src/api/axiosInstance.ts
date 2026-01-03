@@ -7,25 +7,26 @@ const api = axios.create({
 // Request interceptor to add JWT token
 api.interceptors.request.use(
     (config) => {
-        // Allow both JSON requests and multipart FormData (e.g. registration with profile_image).
+        // Ensure headers object exists
+        config.headers = config.headers || {};
+
+        // Allow both JSON requests and multipart FormData
         const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
         if (!isFormData) {
-            config.headers = config.headers ?? {};
-            // Only set JSON content-type when we are actually sending JSON.
-            if (!('Content-Type' in config.headers) && !('content-type' in config.headers)) {
-                (config.headers as any)['Content-Type'] = 'application/json';
+            if (!config.headers['Content-Type'] && !config.headers['content-type']) {
+                config.headers['Content-Type'] = 'application/json';
             }
-        } else if (config.headers) {
-            // Let the browser set the multipart boundary.
-            delete (config.headers as any)['Content-Type'];
-            delete (config.headers as any)['content-type'];
         }
 
         const tokensStr = localStorage.getItem('tokens');
         if (tokensStr) {
-            const tokens = JSON.parse(tokensStr);
-            if (tokens && tokens.access) {
-                config.headers.Authorization = `Bearer ${tokens.access}`;
+            try {
+                const tokens = JSON.parse(tokensStr);
+                if (tokens && tokens.access) {
+                    config.headers.set('Authorization', `Bearer ${tokens.access}`);
+                }
+            } catch (e) {
+                console.error("Error parsing tokens from localStorage", e);
             }
         }
         return config;

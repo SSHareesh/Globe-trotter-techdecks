@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from core.api.auth import (
@@ -10,6 +11,10 @@ from core.api.auth import (
     PasswordResetRequestView,
     PasswordResetConfirmView,
 )
+from core.api.trips import TripViewSet
+
+router = DefaultRouter()
+router.register(r'trips', TripViewSet, basename='trip')
 
 app_name = 'core'
 
@@ -27,4 +32,7 @@ urlpatterns = [
     # Password Reset
     path('auth/password-reset/', PasswordResetRequestView.as_view(), name='password_reset_request'),
     path('auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    
+    # Trips API
+    path('', include(router.urls)),
 ]

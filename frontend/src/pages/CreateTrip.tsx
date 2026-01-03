@@ -58,7 +58,7 @@ export default function CreateTrip() {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedDestination = location.state?.destination;
-  
+
   const [tripData, setTripData] = useState({
     name: selectedDestination ? `My ${selectedDestination.city_name} Adventure` : '',
     destination: selectedDestination?.city_name || '',
@@ -118,8 +118,8 @@ export default function CreateTrip() {
   }, [cityKey]);
 
   const toggleAttraction = (index: number) => {
-    setSelectedAttractions(prev => 
-      prev.includes(index) 
+    setSelectedAttractions(prev =>
+      prev.includes(index)
         ? prev.filter(i => i !== index)
         : [...prev, index]
     );
@@ -142,7 +142,17 @@ export default function CreateTrip() {
     if (mustSelect && selectedAttractions.length === 0) {
       return;
     }
-    navigate('/build-itinerary');
+
+    // Pass everything to build-itinerary
+    const fullSelectedAttractions = selectedAttractions.map(idx => touristPlaces[idx]);
+
+    navigate('/build-itinerary', {
+      state: {
+        tripData,
+        destination: selectedDestination,
+        attractions: fullSelectedAttractions
+      }
+    });
   };
 
   return (
@@ -153,8 +163,8 @@ export default function CreateTrip() {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Create New Trip</h1>
           <p className="text-gray-600">
-            {selectedDestination 
-              ? `Planning your trip to ${selectedDestination.city_name}, ${selectedDestination.country_name}` 
+            {selectedDestination
+              ? `Planning your trip to ${selectedDestination.city_name}, ${selectedDestination.country_name}`
               : 'Start planning your next adventure'}
           </p>
         </div>
@@ -163,8 +173,8 @@ export default function CreateTrip() {
           <Card className="p-6 mb-6 bg-gradient-to-r from-green-50 to-green-100 border-2 border-green-200">
             <div className="flex items-center gap-4">
               {selectedDestination.image_url && (
-                <img 
-                  src={selectedDestination.image_url} 
+                <img
+                  src={selectedDestination.image_url}
                   alt={selectedDestination.city_name}
                   className="w-24 h-24 rounded-xl object-cover"
                 />
@@ -214,137 +224,133 @@ export default function CreateTrip() {
             </div>
           </Card>
 
-        {selectedDestination && (
-          <div className="mb-8">
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-                <MapPin className="w-6 h-6 text-green-600" />
-                Suggested Places & Activities
-              </h2>
-              <p className="text-gray-600">
-                Top tourist attractions in {selectedDestination?.city_name}. Select the places you want in your trip.
-              </p>
-            </div>
-
-            {attractionsError && (
-              <div className="mb-4 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800">
-                {attractionsError}
+          {selectedDestination && (
+            <div className="mb-8">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                  <MapPin className="w-6 h-6 text-green-600" />
+                  Suggested Places & Activities
+                </h2>
+                <p className="text-gray-600">
+                  Top tourist attractions in {selectedDestination?.city_name}. Select the places you want in your trip.
+                </p>
               </div>
-            )}
 
-            {loadingAttractions && (
-              <div className="text-center py-10">
-                <p className="text-gray-600">Loading tourist places...</p>
-              </div>
-            )}
+              {attractionsError && (
+                <div className="mb-4 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800">
+                  {attractionsError}
+                </div>
+              )}
 
-            {!loadingAttractions && touristPlaces.length === 0 && (
-              <div className="text-center py-12 bg-gray-100 rounded-lg">
-                <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-700 font-medium">No tourist places found for this destination.</p>
-                <p className="text-gray-600 text-sm mt-1">Try another destination.</p>
-              </div>
-            )}
+              {loadingAttractions && (
+                <div className="text-center py-10">
+                  <p className="text-gray-600">Loading tourist places...</p>
+                </div>
+              )}
 
-            {!loadingAttractions && touristPlaces.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {touristPlaces.map((place, index) => {
-                const isSelected = selectedAttractions.includes(index);
-                const IconComponent = getIconComponent(place.icon || 'MapPin');
-                
-                return (
-                  <Card
-                    key={index}
-                    className={`cursor-pointer transition-all duration-300 overflow-hidden ${
-                      isSelected 
-                        ? 'border-3 border-green-500 shadow-2xl ring-4 ring-green-200 scale-105' 
-                        : 'border border-gray-200 hover:border-green-400 hover:shadow-xl hover:scale-102'
-                    }`}
-                    onClick={() => toggleAttraction(index)}
-                  >
-                    <div className="relative">
-                      <img 
-                        src={place.image_url || place.image || FALLBACK_IMAGE} 
-                        alt={place.name}
-                        className={`w-full h-48 object-cover transition-all duration-300 ${
-                          isSelected ? 'brightness-90' : 'hover:brightness-110'
-                        }`}
-                      />
-                      {isSelected && (
-                        <div className="absolute top-3 right-3 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-bounce shadow-lg">
-                          <Camera className="w-4 h-4" />
-                          Selected
+              {!loadingAttractions && touristPlaces.length === 0 && (
+                <div className="text-center py-12 bg-gray-100 rounded-lg">
+                  <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-700 font-medium">No tourist places found for this destination.</p>
+                  <p className="text-gray-600 text-sm mt-1">Try another destination.</p>
+                </div>
+              )}
+
+              {!loadingAttractions && touristPlaces.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {touristPlaces.map((place, index) => {
+                    const isSelected = selectedAttractions.includes(index);
+                    const IconComponent = getIconComponent(place.icon || 'MapPin');
+
+                    return (
+                      <Card
+                        key={index}
+                        className={`cursor-pointer transition-all duration-300 overflow-hidden ${isSelected
+                            ? 'border-3 border-green-500 shadow-2xl ring-4 ring-green-200 scale-105'
+                            : 'border border-gray-200 hover:border-green-400 hover:shadow-xl hover:scale-102'
+                          }`}
+                        onClick={() => toggleAttraction(index)}
+                      >
+                        <div className="relative">
+                          <img
+                            src={place.image_url || place.image || FALLBACK_IMAGE}
+                            alt={place.name}
+                            className={`w-full h-48 object-cover transition-all duration-300 ${isSelected ? 'brightness-90' : 'hover:brightness-110'
+                              }`}
+                          />
+                          {isSelected && (
+                            <div className="absolute top-3 right-3 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 animate-bounce shadow-lg">
+                              <Camera className="w-4 h-4" />
+                              Selected
+                            </div>
+                          )}
+                          <div className={`absolute top-3 left-3 p-2 rounded-lg backdrop-blur-sm ${isSelected ? 'bg-green-500/90' : 'bg-white/90'
+                            }`}>
+                            <IconComponent className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-gray-700'
+                              }`} />
+                          </div>
                         </div>
-                      )}
-                      <div className={`absolute top-3 left-3 p-2 rounded-lg backdrop-blur-sm ${
-                        isSelected ? 'bg-green-500/90' : 'bg-white/90'
-                      }`}>
-                        <IconComponent className={`w-5 h-5 ${
-                          isSelected ? 'text-white' : 'text-gray-700'
-                        }`} />
+
+                        <div className="p-5">
+                          <h3 className="font-bold text-gray-900 text-xl mb-2">{place.name}</h3>
+                          <p className="text-sm text-gray-600 mb-4 h-10 line-clamp-2">
+                            {place.description || 'Popular attraction'}
+                          </p>
+
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                              {place.type || 'Attraction'}
+                            </span>
+                            <div className="flex items-center gap-1.5 bg-yellow-50 px-3 py-1.5 rounded-full">
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                              <span className="text-sm font-bold text-gray-900">{place.rating ?? '—'}</span>
+                            </div>
+                          </div>
+
+                          {!isSelected ? (
+                            <div className="text-center pt-2 border-t border-gray-200">
+                              <span className="text-sm text-green-600 font-medium hover:text-green-700 transition-colors">
+                                ✓ Click to add to your itinerary
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-center pt-2 border-t border-green-200 bg-green-50 -mx-5 -mb-5 py-3">
+                              <span className="text-sm text-green-700 font-bold">
+                                ✓ Added to your trip!
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+
+              {selectedAttractions.length > 0 && (
+                <div className="mt-6 p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-md">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-green-500 p-2 rounded-full">
+                        <Camera className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-green-900 font-bold text-lg">
+                          {selectedAttractions.length} Tourist Place{selectedAttractions.length !== 1 ? 's' : ''} Selected
+                        </p>
+                        <p className="text-green-700 text-sm">
+                          Ready to add these to your itinerary
+                        </p>
                       </div>
                     </div>
-                    
-                    <div className="p-5">
-                      <h3 className="font-bold text-gray-900 text-xl mb-2">{place.name}</h3>
-                      <p className="text-sm text-gray-600 mb-4 h-10 line-clamp-2">
-                        {place.description || 'Popular attraction'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                          {place.type || 'Attraction'}
-                        </span>
-                        <div className="flex items-center gap-1.5 bg-yellow-50 px-3 py-1.5 rounded-full">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-bold text-gray-900">{place.rating ?? '—'}</span>
-                        </div>
-                      </div>
-                      
-                      {!isSelected ? (
-                        <div className="text-center pt-2 border-t border-gray-200">
-                          <span className="text-sm text-green-600 font-medium hover:text-green-700 transition-colors">
-                            ✓ Click to add to your itinerary
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="text-center pt-2 border-t border-green-200 bg-green-50 -mx-5 -mb-5 py-3">
-                          <span className="text-sm text-green-700 font-bold">
-                            ✓ Added to your trip!
-                          </span>
-                        </div>
-                      )}
+                    <div className="text-green-600">
+                      <Heart className="w-8 h-8 fill-current" />
                     </div>
-                  </Card>
-                );
-              })}
-              </div>
-            )}
-            
-            {selectedAttractions.length > 0 && (
-              <div className="mt-6 p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-green-500 p-2 rounded-full">
-                      <Camera className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-green-900 font-bold text-lg">
-                        {selectedAttractions.length} Tourist Place{selectedAttractions.length !== 1 ? 's' : ''} Selected
-                      </p>
-                      <p className="text-green-700 text-sm">
-                        Ready to add these to your itinerary
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-green-600">
-                    <Heart className="w-8 h-8 fill-current" />
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
           <div className="flex gap-4">
             <Button
