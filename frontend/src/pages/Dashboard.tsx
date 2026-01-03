@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import TripCard from '../components/TripCard';
 import Card from '../components/Card';
 import { fetchTrendingDestinations, fetchDestinations } from '../api/landingApi';
+import { trips } from '../data/yourtrips';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
-  const trips: any[] = [];
 
   useEffect(() => {
     loadTrendingDestinations();
