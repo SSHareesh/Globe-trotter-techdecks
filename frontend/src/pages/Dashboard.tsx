@@ -17,7 +17,6 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
-  const [trips, setTrips] = useState<any[]>([]);
 
   useEffect(() => {
     loadTrendingDestinations();
