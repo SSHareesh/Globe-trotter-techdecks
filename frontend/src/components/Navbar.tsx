@@ -1,7 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, Globe, MapPin, Users, Calendar, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-// import logowithname from '../assets/images/logowithname.png';
 
 export default function Navbar() {
   const navigate = useNavigate();

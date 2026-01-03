@@ -11,7 +11,6 @@ const CreateTripModal = ({ isOpen = true, onClose, destination }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Call API to create trip with destination details
     console.log('Creating trip:', {
       tripName,
       destination: destination.city_name || destination.name,
@@ -23,7 +22,6 @@ const CreateTripModal = ({ isOpen = true, onClose, destination }) => {
       endDate,
       travelers,
     });
-    // For now, just close the modal
     alert(`Trip to ${destination.city_name || destination.name} created! (API integration pending)`);
     onClose();
   };

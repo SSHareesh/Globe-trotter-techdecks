@@ -25,7 +25,6 @@ async function handleResponse(res: Response) {
         errorMessage = errorData.message;
       }
     } catch {
-      // If JSON parsing fails, use generic message
     }
     const error: any = new Error(errorMessage);
     error.status = res.status;
@@ -45,7 +44,6 @@ export async function fetchDestinations(q: string, limit: number = 6) {
   }
   const res = await fetch(buildUrl('/api/v1/landing/destinations/', { q, limit }));
   const data = await handleResponse(res);
-  // Map backend response to frontend format
   return {
     ...data,
     destinations: (data.results || []).map((dest: any) => ({
@@ -60,7 +58,6 @@ export async function fetchDestinations(q: string, limit: number = 6) {
 export async function fetchTrendingDestinations(limit: number = 8) {
   const res = await fetch(buildUrl('/api/v1/landing/trending/', { limit }));
   const data = await handleResponse(res);
-  // Map backend response to frontend format
   return {
     ...data,
     destinations: (data.results || []).map((dest: any) => ({

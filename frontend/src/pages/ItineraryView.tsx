@@ -38,7 +38,6 @@ export default function ItineraryView() {
       const data = await getTripById(id!);
       setTrip(data);
 
-      // Attempt AI enhancement
       try {
         setIsEnhancing(true);
         const {
@@ -104,7 +103,6 @@ export default function ItineraryView() {
   const end = new Date(end_date);
   const duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-  // Static Fallback Schedule Logic
   const attractionsPerDay = Math.ceil((attractions_data?.length || 0) / duration);
   const getDayAttractions = (dayIndex: number) => {
     if (!attractions_data) return [];
@@ -113,7 +111,6 @@ export default function ItineraryView() {
   };
 
   const getDaySchedule = (dayIndex: number) => {
-    // Resilient matching for string or number indices
     const aiDay = enhancedSchedule.find(d => Number(d.day) === dayIndex);
     if (aiDay?.schedule) return aiDay.schedule;
 
@@ -121,7 +118,6 @@ export default function ItineraryView() {
     const isFirstDay = dayIndex === 1;
     const isLastDay = dayIndex === duration;
 
-    // Day 1: Arrival & Check-in
     if (isFirstDay) {
       schedule.push({
         time: '09:00 AM',
