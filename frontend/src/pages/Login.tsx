@@ -32,18 +32,16 @@ export default function Login() {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-r from-green-600 to-green-500 p-3 rounded-full">
-              <Globe className="h-12 w-12 text-white" />
+            <div className=" h-20 w-40 p-3 mb-8 rounded-full">
+             <img src="/images/logowithname.png" alt="GlobeTrotter" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-            GlobeTrotter
-          </h1>
+          
           <p className="text-gray-600 mt-2">Welcome back! Plan your next adventure</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="flex justify-center mb-6">
+        <div className="bg-white rounded-2xl shadow-xl p-4">
+          <div className="flex justify-center mb-4">
             <div className="bg-gray-100 p-4 rounded-full">
               <User className="h-16 w-16 text-gray-400" />
             </div>
