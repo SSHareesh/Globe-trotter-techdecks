@@ -1,7 +1,7 @@
 import { X, MapPin, Calendar, Users } from 'lucide-react';
 import { useState } from 'react';
 
-const CreateTripModal = ({ isOpen, onClose, destination }) => {
+const CreateTripModal = ({ isOpen = true, onClose, destination }) => {
   const [tripName, setTripName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -14,8 +14,9 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
     // TODO: Call API to create trip with destination details
     console.log('Creating trip:', {
       tripName,
-      destination: destination.name,
-      country: destination.country,
+      destination: destination.city_name || destination.name,
+      country: destination.country_name || destination.country,
+      iataCode: destination.iata_code,
       lat: destination.lat,
       lon: destination.lon,
       startDate,
@@ -23,9 +24,12 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
       travelers,
     });
     // For now, just close the modal
-    alert(`Trip to ${destination.name} created! (API integration pending)`);
+    alert(`Trip to ${destination.city_name || destination.name} created! (API integration pending)`);
     onClose();
   };
+
+  const destinationName = destination.city_name || destination.name;
+  const destinationCountry = destination.country_name || destination.country;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -35,7 +39,7 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
           <div>
             <h2 className="text-2xl font-bold dark:text-white">Create New Trip</h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              Plan your adventure to {destination.name}
+              Plan your adventure to {destinationName}
             </p>
           </div>
           <button
@@ -53,7 +57,7 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
             {destination.image_url && (
               <img
                 src={destination.image_url}
-                alt={destination.name}
+                alt={destinationName}
                 className="w-24 h-24 rounded-2xl object-cover flex-shrink-0"
               />
             )}
@@ -62,9 +66,9 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
                 <MapPin size={18} />
                 <span className="text-sm font-semibold">Destination</span>
               </div>
-              <h3 className="text-xl font-bold dark:text-white">{destination.name}</h3>
+              <h3 className="text-xl font-bold dark:text-white">{destinationName}</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                {destination.country}
+                {destinationCountry}
                 {destination.lat && destination.lon && (
                   <span className="ml-2 text-xs">
                     ({destination.lat.toFixed(4)}, {destination.lon.toFixed(4)})
@@ -86,7 +90,7 @@ const CreateTripModal = ({ isOpen, onClose, destination }) => {
               type="text"
               value={tripName}
               onChange={(e) => setTripName(e.target.value)}
-              placeholder={`My ${destination.name} Adventure`}
+              placeholder={`My ${destinationName} Adventure`}
               required
               className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none dark:bg-slate-700 dark:text-white"
             />

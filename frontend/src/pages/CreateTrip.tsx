@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Card from '../components/Card';
-import { suggestedPlaces } from '../data/dummyData';
+import { fetchTrendingDestinations } from '../api/landingApi';
 
 export default function CreateTrip() {
   const navigate = useNavigate();
@@ -13,6 +13,23 @@ export default function CreateTrip() {
     startDate: '',
     endDate: ''
   });
+  const [suggestedPlaces, setSuggestedPlaces] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadTrendingDestinations();
+  }, []);
+
+  const loadTrendingDestinations = async () => {
+    try {
+      const data = await fetchTrendingDestinations(8);
+      setSuggestedPlaces(data.destinations || []);
+    } catch (error) {
+      console.error('Failed to load destinations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTripData({ ...tripData, [e.target.name]: e.target.value });
@@ -86,29 +103,42 @@ export default function CreateTrip() {
           <p className="text-gray-600">Popular destinations and experiences for your trip</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {suggestedPlaces.map((place) => (
-            <Card key={place.id} hover>
-              <div className="flex gap-4 p-4">
-                <img
-                  src={place.image}
-                  alt={place.name}
-                  className="w-24 h-24 object-cover rounded-lg"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1">{place.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{place.location}</p>
-                  <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                    {place.type}
-                  </span>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Loading suggestions...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {suggestedPlaces.map((place) => (
+              <Card key={place.iata_code} hover>
+                <div className="flex gap-4 p-4">
+                  <img
+                    src={place.image_url || 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=400'}
+                    alt={place.city_name}
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">{place.city_name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{place.country_name}</p>
+                    <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                      {place.region || 'Popular Destination'}
+                    </span>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => {
+                      // Could pre-fill trip data with destination
+                      console.log('Add destination:', place.city_name);
+                    }}
+                  >
+                    Add
+                  </Button>
                 </div>
-                <Button size="sm" variant="outline">
-                  Add
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

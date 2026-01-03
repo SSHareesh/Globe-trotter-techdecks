@@ -40,10 +40,30 @@ export async function fetchDestinations(q, limit = 6) {
     throw new Error('Please enter a search term');
   }
   const res = await fetch(buildUrl('/api/v1/landing/destinations/', { q, limit }));
-  return handleResponse(res);
+  const data = await handleResponse(res);
+  // Map backend response to frontend format
+  return {
+    ...data,
+    destinations: (data.results || []).map(dest => ({
+      ...dest,
+      city_name: dest.name,
+      country_name: dest.country,
+      iata_code: dest.provider_place_id,
+    })),
+  };
 }
 
 export async function fetchTrendingDestinations(limit = 8) {
   const res = await fetch(buildUrl('/api/v1/landing/trending/', { limit }));
-  return handleResponse(res);
+  const data = await handleResponse(res);
+  // Map backend response to frontend format
+  return {
+    ...data,
+    destinations: (data.results || []).map(dest => ({
+      ...dest,
+      city_name: dest.name,
+      country_name: dest.country,
+      iata_code: dest.provider_place_id,
+    })),
+  };
 }
