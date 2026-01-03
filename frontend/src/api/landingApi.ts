@@ -107,3 +107,14 @@ export async function enhanceTrip(data: { destination: string, duration: number,
   });
   return handleResponse(res);
 }
+
+export async function sendChatMessage(message: string, history: any[] = []) {
+  const res = await fetch(buildUrl('/api/v1/landing/chat/'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message, history }),
+  });
+  return handleResponse(res);
+}

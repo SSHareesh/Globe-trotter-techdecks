@@ -512,3 +512,32 @@ class TripAIEnhanceView(LandingAPIView):
                 code='ai_failed',
                 message=str(e)
             )
+
+class ChatBotView(LandingAPIView):
+    """General AI chatbot for travel assistance."""
+    permission_classes = (AllowAny,)
+    throttle_classes = (AnonRateThrottle,)
+
+    def post(self, request):
+        from landing.providers.groq import chat_with_ai
+        
+        message = request.data.get('message')
+        history = request.data.get('history', [])
+        
+        if not message:
+            return error_response(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code='missing_message',
+                message='Message is required.'
+            )
+            
+        try:
+            result = chat_with_ai(message=message, history=history)
+            # result is now a dict with 'response' and optional 'data'
+            return Response(result)
+        except Exception as e:
+            return error_response(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                code='chat_failed',
+                message=str(e)
+            )
