@@ -55,6 +55,10 @@ def get_json(url: str, *, headers: dict[str, str] | None = None, timeout_seconds
 
     except URLError as e:
         raise UpstreamError('Upstream network error', details=str(e)) from e
+        
+    except (TimeoutError, Exception) as e:
+        # Catch unexpected timeouts or other crashes to prevent 500s
+        raise UpstreamError(f'Upstream connection failed: {type(e).__name__}', details=str(e)) from e
 
 
 def post_form(
@@ -98,3 +102,45 @@ def post_form(
 
     except URLError as e:
         raise UpstreamError('Upstream network error', details=str(e)) from e
+        
+    except (TimeoutError, Exception) as e:
+        raise UpstreamError(f'Upstream connection failed: {type(e).__name__}', details=str(e)) from e
+def post_json(
+    url: str,
+    *,
+    payload: dict[str, Any],
+    headers: dict[str, str] | None = None,
+    timeout_seconds: float = 6.0,
+) -> HttpResponse:
+    default_headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'GlobeTrotterTechDecks/1.0',
+    }
+    merged_headers = {**default_headers, **(headers or {})}
+    data = json.dumps(payload).encode('utf-8')
+    req = Request(url, data=data, headers=merged_headers, method='POST')
+
+    try:
+        with urlopen(req, timeout=timeout_seconds) as resp:
+            body = resp.read().decode('utf-8')
+            parsed = json.loads(body) if body else None
+            return HttpResponse(
+                status=resp.status,
+                data=parsed,
+                headers={k: v for k, v in resp.headers.items()},
+            )
+
+    except HTTPError as e:
+        raw = e.read().decode('utf-8') if hasattr(e, 'read') else ''
+        try:
+            parsed = json.loads(raw) if raw else None
+        except Exception:
+            parsed = raw
+        raise UpstreamError('Upstream HTTP error', status=e.code, details=parsed) from e
+
+    except URLError as e:
+        raise UpstreamError('Upstream network error', details=str(e)) from e
+        
+    except (TimeoutError, Exception) as e:
+        raise UpstreamError(f'Upstream connection failed: {type(e).__name__}', details=str(e)) from e

@@ -13,6 +13,12 @@ class Trip(models.Model):
     cover_image = models.ImageField(upload_to='trip_covers/', null=True, blank=True)
     is_public = models.BooleanField(default=False)
     share_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    
+    # New fields for personalized itinerary
+    flight_data = models.JSONField(null=True, blank=True)
+    hotel_data = models.JSONField(null=True, blank=True)
+    destination_data = models.JSONField(null=True, blank=True)
+    attractions_data = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.name

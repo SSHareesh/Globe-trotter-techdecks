@@ -88,17 +88,14 @@ export default function Register() {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-r from-green-600 to-green-500 p-3 rounded-full">
-              <Globe className="h-12 w-12 text-white" />
+            <div className="p-3 h-20 w-40 mb-8 rounded-full">
+             <img src="/images/logowithname.png" alt="GlobeTrotter" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-            Join GlobeTrotter
-          </h1>
           <p className="text-gray-600 mt-2">Create your account and start exploring</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex justify-center mb-6">
               <div className="relative">

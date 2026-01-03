@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 from urllib.parse import urlencode
 
 from decouple import config
@@ -22,6 +22,15 @@ class AmadeusCity:
     country: str | None
     lat: float | None
     lon: float | None
+    raw: Any
+
+
+@dataclass(frozen=True)
+class AmadeusFlightSearch:
+    id: str
+    itineraries: list[dict]
+    price: dict
+    validating_airline_codes: list[str]
     raw: Any
 
 
@@ -150,3 +159,52 @@ def search_cities(keyword: str, *, limit: int = 6, timeout_seconds: float = 6.0)
         )
 
     return out
+
+
+def search_flights_offer(
+    origin_code: str,
+    destination_code: str,
+    departure_date: str,
+    return_date: Optional[str] = None,
+    adults: int = 1,
+    limit: int = 5,
+    timeout_seconds: float = 20.0
+) -> list[dict]:
+    """Search for flight offers using Amadeus Flight Offers Search API.
+    
+    API docs: https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search/api-reference
+    """
+    token = _get_access_token(timeout_seconds=timeout_seconds)
+    
+    def do_request(access_token: str) -> Any:
+        # Note: Amadeus Flight Offers Search uses v2 base
+        base_v2 = AMADEUS_BASE.replace('/v1', '/v2')
+        params = {
+            'originLocationCode': origin_code,
+            'destinationLocationCode': destination_code,
+            'departureDate': departure_date,
+            'adults': adults,
+            'max': limit,
+            'currencyCode': 'INR',
+        }
+        if return_date:
+            params['returnDate'] = return_date
+            
+        url = f"{base_v2}/shopping/flight-offers?{urlencode(params)}"
+        resp = get_json(
+            url,
+            headers={'Authorization': f'Bearer {access_token}'},
+            timeout_seconds=timeout_seconds,
+        )
+        return resp.data
+
+    try:
+        data = do_request(token)
+    except UpstreamError as e:
+        if e.status in (401, 403):
+            token = _get_access_token(timeout_seconds=timeout_seconds, force_refresh=True)
+            data = do_request(token)
+        else:
+            raise
+
+    return (data or {}).get('data', [])

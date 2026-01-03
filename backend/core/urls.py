@@ -24,6 +24,7 @@ router.register(r'cities', CityViewSet, basename='city')
 app_name = 'core'
 
 urlpatterns = [
+    path('', include(router.urls)),
     # Authentication
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),
@@ -43,6 +44,3 @@ urlpatterns = [
     path('community/posts/<int:post_id>/like/', like_post, name='post-like'),
     path('community/posts/<int:post_id>/comments/', CommentListCreateView.as_view(), name='post-comments'),
 ]
-
-# Include router URLs
-urlpatterns += router.urls
