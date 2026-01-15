@@ -120,7 +120,7 @@ Globe-trotter-techdecks/
 
 ## 📝 License
 
-This project is for educational and hackathon purposes (Odoo Hackathon 2024).
+This project is for educational and hackathon purposes (Odoo Hackathon 2026).
 
 ---
 
